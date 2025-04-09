@@ -11,7 +11,7 @@ import os
 DIR = os.path.dirname(__file__)
 __version__ = "0.2.4"
 
-from .utils import (
+from ..questeval_lib.utils import (
     API_T2T,
     sentencize,
     calculate_f1_squad,

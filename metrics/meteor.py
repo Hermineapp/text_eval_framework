@@ -25,9 +25,9 @@ class METEORMetric(TextMetric):
         
         Args:
             language: Langue des textes ('en' pour l'anglais)
-            alpha: Paramètre de pénalité pour la fragmentation
-            beta: Paramètre de pénalité pour la fragmentation
-            gamma: Paramètre de pénalité pour la fragmentation
+            alpha (float) – parameter for controlling relative weights of precision and recall.
+            beta (float) – parameter for controlling shape of penalty as a function of as a function of fragmentation.
+            gamma (float) – relative weight assigned to fragmentation penalty.
             use_synonyms: Utiliser WordNet pour les synonymes (si disponible)
             auto_download: Télécharger automatiquement les ressources NLTK nécessaires
         """
