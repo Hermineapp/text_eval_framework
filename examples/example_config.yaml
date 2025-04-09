@@ -1,0 +1,108 @@
+# Configuration complète du framework d'évaluation de texte
+
+# Métriques à utiliser pour l'évaluation
+metrics:
+  # Métrique BLEU
+  - name: text_eval_framework.metrics.bleu.BLEUMetric
+    params:
+      # Pondérations des n-grammes (1-gramme, 2-grammes, 3-grammes, 4-grammes)
+      weights: [0.25, 0.25, 0.25, 0.25]
+      # Méthode de lissage (method0 à method7)
+      smoothing: method1
+      # Télécharger automatiquement les ressources NLTK nécessaires
+      auto_download: true
+      
+  # Métrique ROUGE
+  - name: text_eval_framework.metrics.rouge.ROUGEMetric
+    params:
+      # Types de ROUGE à calculer
+      rouge_types: ['rouge1', 'rouge2', 'rougeL']
+      # Utiliser un stemmer pour normaliser les mots
+      use_stemmer: true
+      
+  # Métrique BERTScore (nécessite des dépendances supplémentaires)
+  - name: text_eval_framework.metrics.bert_score.BERTScoreMetric
+    params:
+      # Modèle BERT à utiliser
+      model_name: bert-base-uncased
+      # Taille des batchs pour le calcul
+      batch_size: 32
+      # Rescaler les scores avec une baseline
+      rescale_with_baseline: true
+      # Langue des textes
+      lang: en
+      
+  # Métrique METEOR (si implémentée)
+  - name: text_eval_framework.metrics.meteor.METEORMetric
+    params:
+      # Langue des textes
+      language: en
+      # Utiliser des synonymes
+      use_synonyms: true
+      
+  # Métrique personnalisée
+  - name: text_eval_framework.examples.custom_metric.JaccardSimilarityMetric
+    params:
+      # Tokeniser les textes en mots
+      tokenize: true
+      # Convertir les textes en minuscules
+      lowercase: true
+
+  - name: text_eval_framework.metrics.questeval.QuestEvalMetric
+    params:
+      # Tâche d'évaluation
+      task: summarization
+      # Langue des textes
+      language: en
+      # Utiliser le CPU au lieu du GPU
+      no_cuda: false
+      # Taille des batchs pour l'inférence
+      batch_size: 8
+      # Nombre maximum de questions par document
+      max_questions_per_doc: 20
+
+# Configuration de la corrélation avec les évaluations humaines
+correlation:
+  # Méthodes de corrélation à utiliser
+  methods:
+    - pearson
+    - spearman
+    - kendall
+  
+  # Données de corrélation
+  data:
+    # Chemin vers le fichier contenant les scores humains
+    human_scores_path: data/human_scores.csv
+    # Chemin vers le fichier contenant les références (optionnel)
+    references_path: data/references.txt
+    # Chemin vers le fichier contenant les candidats (optionnel)
+    candidates_path: data/candidates.txt
+  
+  # Configuration de la visualisation
+  visualization:
+    # Activer la visualisation
+    enabled: true
+    # Répertoire de sortie pour les visualisations
+    output_dir: results/plots
+    # Générer des visualisations pour chaque métrique individuellement
+    plot_individual_metrics: true
+    # Générer une distribution des scores humains
+    plot_human_distribution: true
+    # Taille des figures (largeur, hauteur) en pouces
+    figure_size: [10, 6]
+    # Palette de couleurs à utiliser
+    color_palette: viridis
+
+# Configuration de la sortie
+output:
+  # Répertoire de sortie pour les rapports
+  report_dir: results/reports
+  # Formats de sortie
+  formats:
+    - json
+    - yaml
+    - csv
+  # Niveau de détail du rapport (basic, standard, detailed)
+  detail_level: detailed
+  # Inclure les scores individuels dans le rapport
+  include_individual_scores: true
