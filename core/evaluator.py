@@ -89,7 +89,15 @@ class TextEvaluator:
         for name, metric in metrics_to_use.items():
             refs = metric.preprocess(references) if hasattr(metric, 'preprocess') else references
             cands = metric.preprocess(candidates) if hasattr(metric, 'preprocess') else candidates
-            results[name] = metric.compute(refs, cands)
+            metric_results = metric.compute(refs, cands)
+            results[name] = metric_results
+            
+            # Ajout des métriques dérivées pour ROUGE (précision et rappel)
+            if name == "rouge" and 'precision' in metric_results and 'recall' in metric_results:
+                # Ajouter les métriques dérivées comme des métriques distinctes
+                results["rouge_precision"] = metric_results["precision"]
+                results["rouge_recall"] = metric_results["recall"]
+                results["rouge_f1"] = metric_results["f1"]
             
         return results
     

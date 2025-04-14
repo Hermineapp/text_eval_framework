@@ -8,35 +8,112 @@ from core.metric_interface import TextMetric
 
 try:
     import torch
+    import torch.nn as nn
     from transformers import BartTokenizer, BartForConditionalGeneration
     _BARTSCORE_AVAILABLE = True
 except ImportError:
     _BARTSCORE_AVAILABLE = False
 
 
+class BartScorer:
+    """
+    Class for calculating BartScore between text pairs.
+    
+    BartScore uses BART's conditional probabilities to evaluate text quality.
+    """
+    
+    def __init__(self, device='cuda:0', max_length=1024, checkpoint='facebook/bart-large-cnn'):
+        # Set up model
+        self.device = device
+        self.max_length = max_length
+        self.tokenizer = BartTokenizer.from_pretrained(checkpoint)
+        self.model = BartForConditionalGeneration.from_pretrained(checkpoint)
+        self.model.eval()
+        self.model.to(device)
+
+        # Set up loss
+        self.loss_fct = nn.NLLLoss(reduction='none', ignore_index=self.model.config.pad_token_id)
+        self.lsm = nn.LogSoftmax(dim=1)
+
+    def load(self, path):
+        """ Load model from a checkpoint """
+        self.model.load_state_dict(torch.load(path, map_location=self.device))
+
+    def score(self, srcs, tgts, batch_size=4):
+        """ Score a batch of examples """
+        score_list = []
+        for i in range(0, len(srcs), batch_size):
+            src_list = srcs[i: i + batch_size]
+            tgt_list = tgts[i: i + batch_size]
+            try:
+                with torch.no_grad():
+                    encoded_src = self.tokenizer(
+                        src_list,
+                        max_length=self.max_length,
+                        truncation=True,
+                        padding=True,
+                        return_tensors='pt'
+                    )
+                    encoded_tgt = self.tokenizer(
+                        tgt_list,
+                        max_length=self.max_length,
+                        truncation=True,
+                        padding=True,
+                        return_tensors='pt'
+                    )
+                    src_tokens = encoded_src['input_ids'].to(self.device)
+                    src_mask = encoded_src['attention_mask'].to(self.device)
+
+                    tgt_tokens = encoded_tgt['input_ids'].to(self.device)
+                    tgt_mask = encoded_tgt['attention_mask']
+                    tgt_len = tgt_mask.sum(dim=1).to(self.device)
+
+                    output = self.model(
+                        input_ids=src_tokens,
+                        attention_mask=src_mask,
+                        labels=tgt_tokens
+                    )
+                    logits = output.logits.view(-1, self.model.config.vocab_size)
+                    loss = self.loss_fct(self.lsm(logits), tgt_tokens.view(-1))
+                    loss = loss.view(tgt_tokens.shape[0], -1)
+                    loss = loss.sum(dim=1) / tgt_len
+                    curr_score_list = [-x.item() for x in loss]
+                    score_list += curr_score_list
+
+            except RuntimeError as e:
+                print(f'Error scoring batch: {e}')
+                print(f'source: {src_list}')
+                print(f'target: {tgt_list}')
+                # Continue with other batches instead of exiting
+                score_list += [-100.0] * len(src_list)  # Add placeholder scores
+        
+        return score_list
+
+
 class BartScoreMetric(TextMetric):
     """
     Implémentation de la métrique BartScore pour l'évaluation de texte.
     
-    BartScore utilise un modèle BART pour évaluer la qualité d'un texte généré
-    en calculant la probabilité conditionnelle du texte candidat étant donné le texte de référence.
+    BartScore utilise les probabilités conditionnelles de BART pour évaluer
+    la qualité des textes. Il peut être utilisé en mode source->cible (prec),
+    cible->source (recall) ou les deux (F1).
     """
     
-    def __init__(self, 
-                model_name: str = "facebook/bart-large-cnn", 
-                device: str = None,
-                max_length: int = 1024,
-                batch_size: int = 4,
-                direction: str = "avg"):
+    def __init__(self, model_name: str = 'facebook/bart-large-cnn', 
+                direction: str = 'src2tgt', batch_size: int = 4,
+                checkpoint_path: Optional[str] = None, 
+                device: Optional[str] = None,
+                max_length: int = 1024):
         """
         Initialise la métrique BartScore.
         
         Args:
             model_name: Nom du modèle BART à utiliser
-            device: Appareil à utiliser ('cuda', 'cpu')
-            max_length: Longueur maximale des textes en tokens
-            batch_size: Taille du batch pour les calculs
             direction: Direction d'évaluation ('src2tgt', 'tgt2src', ou 'avg')
+            batch_size: Taille des batchs pour le calcul
+            checkpoint_path: Chemin vers un checkpoint pré-entraîné (optionnel)
+            device: Appareil à utiliser ('cuda', 'cpu')
+            max_length: Longueur maximale des séquences
             
         Raises:
             ImportError: Si les packages requis ne sont pas installés
@@ -46,68 +123,39 @@ class BartScoreMetric(TextMetric):
                 "Les packages 'torch' et 'transformers' sont requis pour utiliser BartScoreMetric. "
                 "Installez-les avec 'pip install torch transformers'."
             )
-            
-        self.model_name = model_name
-        self.max_length = max_length
-        self.batch_size = batch_size
         
-        # Vérifier que direction est une valeur valide
-        assert direction in ['src2tgt', 'tgt2src', 'avg'], "direction doit être 'src2tgt', 'tgt2src' ou 'avg'"
+        # Valider les paramètres
+        if direction not in ['src2tgt', 'tgt2src', 'avg']:
+            raise ValueError(
+                "Le paramètre 'direction' doit être l'un des suivants: 'src2tgt', 'tgt2src', 'avg'"
+            )
+        
+        self.model_name = model_name
         self.direction = direction
+        self.batch_size = batch_size
+        self.max_length = max_length
         
         # Déterminer l'appareil à utiliser
         if device is None:
-            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         else:
             self.device = device
+            
+        # Initialiser le scorer
+        self.scorer = BartScorer(
+            device=self.device,
+            max_length=max_length,
+            checkpoint=model_name
+        )
         
-        # Charger le modèle et le tokenizer
-        self.tokenizer = BartTokenizer.from_pretrained(model_name)
-        self.model = BartForConditionalGeneration.from_pretrained(model_name)
-        self.model.eval()
-        self.model.to(self.device)
+        # Charger un checkpoint personnalisé si spécifié
+        if checkpoint_path:
+            self.scorer.load(checkpoint_path)
     
     @property
     def name(self) -> str:
         """Renvoie le nom de la métrique."""
-        return "bartscore"
-    
-    def _compute_bartscore(self, srcs: List[str], tgts: List[str]) -> List[float]:
-        """
-        Calcule le score BART d'une liste de références vers une liste de candidats.
-        
-        Args:
-            srcs: Liste de textes source (références)
-            tgts: Liste de textes cible (candidats)
-            
-        Returns:
-            Liste des scores (log-probabilités) pour chaque paire (src, tgt)
-        """
-        scores = []
-        
-        for i in range(0, len(srcs), self.batch_size):
-            src_batch = srcs[i:i+self.batch_size]
-            tgt_batch = tgts[i:i+self.batch_size]
-            
-            # Tokenize les textes
-            with torch.no_grad():
-                inputs = self.tokenizer(src_batch, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
-                inputs = {k: v.to(self.device) for k, v in inputs.items()}
-                
-                # Tokenize les textes cibles
-                targets = self.tokenizer(tgt_batch, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
-                targets = {k: v.to(self.device) for k, v in targets.items()}
-                
-                # Calculer les log-probabilités
-                outputs = self.model(**inputs, labels=targets["input_ids"])
-                log_likelihood = -outputs.loss.item() * targets["input_ids"].shape[0] * targets["input_ids"].shape[1]
-                
-                # Normaliser par la longueur
-                for j in range(len(tgt_batch)):
-                    tgt_len = targets["attention_mask"][j].sum().item()
-                    scores.append(log_likelihood / tgt_len)
-        
-        return scores
+        return f"bartscore_{self.direction}"
     
     def compute(self, references: List[str], candidates: List[str], **kwargs) -> Dict[str, Any]:
         """
@@ -127,24 +175,25 @@ class BartScoreMetric(TextMetric):
                 f"au nombre de candidats ({len(candidates)})"
             )
         
-        # Calculer les scores dans les deux directions
-        if self.direction == 'src2tgt' or self.direction == 'avg':
-            ref2cand_scores = self._compute_bartscore(references, candidates)
-        else:
-            ref2cand_scores = []
-            
-        if self.direction == 'tgt2src' or self.direction == 'avg':
-            cand2ref_scores = self._compute_bartscore(candidates, references)
-        else:
-            cand2ref_scores = []
+        # Calcul des scores selon la direction
+        src2tgt_scores = None
+        tgt2src_scores = None
         
-        # Calculer les scores individuels selon la direction choisie
+        if self.direction in ['src2tgt', 'avg']:
+            # Référence -> Candidat (précision)
+            src2tgt_scores = self.scorer.score(references, candidates, self.batch_size)
+            
+        if self.direction in ['tgt2src', 'avg']:
+            # Candidat -> Référence (rappel)
+            tgt2src_scores = self.scorer.score(candidates, references, self.batch_size)
+        
+        # Calculer les scores finaux
         if self.direction == 'src2tgt':
-            individual_scores = ref2cand_scores
+            individual_scores = src2tgt_scores
         elif self.direction == 'tgt2src':
-            individual_scores = cand2ref_scores
-        else:  # self.direction == 'avg'
-            individual_scores = [(s1 + s2) / 2 for s1, s2 in zip(ref2cand_scores, cand2ref_scores)]
+            individual_scores = tgt2src_scores
+        else:  # 'avg'
+            individual_scores = [(s + t) / 2 for s, t in zip(src2tgt_scores, tgt2src_scores)]
         
         # Calculer le score global (moyenne)
         global_score = np.mean(individual_scores)
