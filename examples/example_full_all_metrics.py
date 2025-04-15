@@ -62,7 +62,7 @@ def main():
     # Créer l'évaluateur
     evaluator = TextEvaluator()
     
-    # 1. Ajouter BLEU (métrique de base)
+    """ # 1. Ajouter BLEU (métrique de base)
     try:
         print("Ajout de la métrique BLEU...")
         evaluator.add_metric(BLEUMetric(weights=(0.25, 0.25, 0.25, 0.25), smoothing="method1"))
@@ -149,17 +149,17 @@ def main():
         print("✗ Impossible d'ajouter la métrique BartScore: packages 'transformers' et/ou 'torch' non installés")
         print("  Installez-les avec: pip install torch transformers")
     except Exception as e:
-        print(f"✗ Erreur lors de l'ajout de la métrique BartScore: {e}")
+        print(f"✗ Erreur lors de l'ajout de la métrique BartScore: {e}")"""
     
     # 9. Ajouter UniEval (nécessite torch, nltk et unieval)
     try:
         print("\nAjout de la métrique UniEval...")
         from metrics.unieval import UniEvalMetric
-        evaluator.add_metric(UniEvalMetric(task="summarization", aspects=["coherence", "consistency"]))
+        evaluator.add_metric(UniEvalMetric(task="summarization", aspects=["relevance", "consistency"]))
         print("✓ Métrique UniEval ajoutée avec succès")
-    except ImportError:
-        print("✗ Impossible d'ajouter la métrique UniEval: packages 'torch', 'nltk' ou 'unieval' non installés")
-        print("  Installez-les avec: pip install torch nltk git+https://github.com/maszhongming/UniEval.git")
+    #except ImportError:
+    #    print("✗ Impossible d'ajouter la métrique UniEval: packages 'torch', 'nltk' ou 'unieval' non installés")
+    #    print("  Installez-les avec: pip install torch nltk git+https://github.com/maszhongming/UniEval.git")
     except Exception as e:
         print(f"✗ Erreur lors de l'ajout de la métrique UniEval: {e}")
 

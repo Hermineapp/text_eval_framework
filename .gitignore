@@ -39,3 +39,8 @@ metrics/unieval_lib/reproduce/unieval_predict/dialogue/topical_chat_result.json
 metrics/unieval_lib/reproduce/unieval_predict/fact/qags_cnndm_result.json
 metrics/unieval_lib/reproduce/unieval_predict/fact/qags_xsum_result.json
 metrics/unieval_lib/reproduce/unieval_predict/summarization/summeval_result.json
+metrics/geval/data/summeval.json
+metrics/geval/results/gpt4_coh_detailed.json
+metrics/geval/results/gpt4_con_detailed.json
+metrics/geval/results/gpt4_flu_detailed.json
+metrics/geval/results/gpt4_rel_detailed.json
