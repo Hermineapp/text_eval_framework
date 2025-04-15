@@ -40,6 +40,23 @@ metrics:
       # Utiliser des synonymes
       use_synonyms: true
       
+  # Métrique Geval
+  - name: text_eval_framework.examples.geval.GEvalMetric
+    params:
+      dimension: "relevance"
+      model_type: "ollama"
+      model_name: "gemma3:27b"
+      ollama_base_url: "http://localhost:32150"
+      api_key: None
+      temperature: 0.7
+      max_tokens: 10
+      prompt_template: None
+      n_responses: 3
+      parse_numeric: True
+      verbose: False
+      retry_delay: 1
+      max_retries: 3
+
   # Métrique personnalisée
   - name: text_eval_framework.examples.custom_metric.JaccardSimilarityMetric
     params:

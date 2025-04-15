@@ -10,6 +10,7 @@ from .sentence_bert import SentenceBERTMetric
 from .questeval import QuestEvalMetric
 from .bartscore import BartScoreMetric
 from .unieval import UniEvalMetric
+from .geval import GEvalMetric
 
 __all__ = [
     'BLEUMetric', 
@@ -19,5 +20,6 @@ __all__ = [
     'SentenceBERTMetric', 
     'QuestEvalMetric',
     'BartScoreMetric',
-    'UniEvalMetric'
+    'UniEvalMetric', 
+    "GEvalMetric"
 ]

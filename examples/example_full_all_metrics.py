@@ -163,6 +163,22 @@ def main():
     except Exception as e:
         print(f"✗ Erreur lors de l'ajout de la métrique UniEval: {e}")
 
+    # 10. Ajouter la métrique G-Eval
+    try:
+        
+        print(f"Ajout de la métrique G-Eval")
+        from metrics.geval import GEvalMetric
+        evaluator.add_metric(
+            GEvalMetric(
+                dimension= "relevance",
+                model_type="ollama",
+                model_name="gemma3:27b",
+                ollama_base_url="http://localhost:32149",
+            )
+        )
+        print("✓ Métrique G-Eval ajoutée avec succès")
+    except Exception as e:
+        print(f"✗ Erreur lors de l'ajout de la métrique G-Eval: {e}")
 
     # Vérifier qu'au moins une métrique a été ajoutée
     if not evaluator.metrics:

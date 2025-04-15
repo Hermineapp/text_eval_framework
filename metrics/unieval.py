@@ -154,8 +154,8 @@ class UniEvalMetric(TextMetric):
             )
         
         # Pour certaines tâches comme le résumé, les sources sont nécessaires
-        if self.task in ["summarization", "data2text"] and sources is None:
-            raise ValueError(f"Des textes source sont requis pour la tâche '{self.task}'")
+        #if self.task in ["summarization", "data2text"] and sources is None:
+        #    raise ValueError(f"Des textes source sont requis pour la tâche '{self.task}'")
         
         # Si aucune source n'est fournie, utiliser les références comme sources
         src_list = sources if sources is not None else references
