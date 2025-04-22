@@ -167,7 +167,7 @@ def main():
     # 10. Ajouter la métrique G-Eval
     try:
         
-        print(f"Ajout de la métrique G-Eval")
+        print(f"\nAjout de la métrique G-Eval")
         from metrics.geval import GEvalMetric
         evaluator.add_metric(
             GEvalMetric(
@@ -180,6 +180,21 @@ def main():
         print("✓ Métrique G-Eval ajoutée avec succès")
     except Exception as e:
         print(f"✗ Erreur lors de l'ajout de la métrique G-Eval: {e}")
+
+
+    # 11. Ajouter la métrique SEval_ex
+    try:
+        print(f"\nAjout de la métrique SEval_ex")
+        from metrics.seval_ex import SEvalExMetric
+        evaluator.add_metric(
+            SEvalExMetric(
+                model_name="gemma3:27b",
+                ollama_base_url="http://localhost:32149",
+            )
+        )
+        print("✓ Métrique SEval_ex ajoutée avec succès")
+    except Exception as e:
+        print(f"✗ Erreur lors de l'ajout de la métrique SEval_ex: {e}")
 
     # Vérifier qu'au moins une métrique a été ajoutée
     if not evaluator.metrics:
