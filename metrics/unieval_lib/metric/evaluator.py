@@ -299,6 +299,7 @@ class FactEvaluator:
 def get_evaluator(task, max_length=1024, device='cuda:0', cache_dir=None):
     assert task in ['summarization', 'dialogue', 'data2text', 'fact']
     if task == 'summarization':
+        print('Using UniEval for summarization task')
         return SumEvaluator(max_length=max_length,
                             device=device,
                             cache_dir=cache_dir)

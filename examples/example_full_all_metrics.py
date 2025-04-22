@@ -155,6 +155,7 @@ def main():
     try:
         print("\nAjout de la métrique UniEval...")
         from metrics.unieval import UniEvalMetric
+        print("UniEval est disponible")
         evaluator.add_metric(UniEvalMetric(task="summarization", aspects=["coherence", "consistency"]))
         print("✓ Métrique UniEval ajoutée avec succès")
     #except ImportError:

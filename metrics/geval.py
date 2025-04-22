@@ -295,12 +295,12 @@ class GEvalMetric(TextMetric):
             for attempt in range(self.max_retries):
                 try:
                     # Requête à l'API Ollama
-                    print(f"Envoi de la requête à Ollama: {prompt}")
+                    #print(f"Envoi de la requête à Ollama: {prompt}")
                     response = self.ollama_client.generate(
                         model=self.model_name,
                         prompt=prompt,
                     )
-                    print(f"Réponse du modèle: {response}")
+                    #print(f"Réponse du modèle: {response}")
 
                     # Extraire le score de la réponse
                     response_text = response.get('response', '')
