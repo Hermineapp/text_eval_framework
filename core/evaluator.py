@@ -147,7 +147,7 @@ class TextEvaluator:
         correlation_report = self.correlation.generate_correlation_report(correlations)
         
         # Déterminer la meilleure métrique
-        best_metric = self.correlation.find_best_metric(correlations, 'pearson')
+        best_metric = self.correlation.find_best_metric(correlations, 'spearman')
         
         return {
             'evaluation_results': eval_results,

@@ -175,6 +175,7 @@ def main():
                 model_type="ollama",
                 model_name="gemma3:27b",
                 ollama_base_url="http://localhost:32149",
+                debug_mode=True,
             )
         )
         print("✓ Métrique G-Eval ajoutée avec succès")
@@ -190,6 +191,7 @@ def main():
             SEvalExMetric(
                 model_name="gemma3:27b",
                 ollama_base_url="http://localhost:32149",
+                debug_mode=True,
             )
         )
         print("✓ Métrique SEval_ex ajoutée avec succès")

@@ -19,12 +19,17 @@ from typing import List, Dict, Any, Union, Optional
 import numpy as np
 from core.metric_interface import TextMetric
 
+# Configuration du logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 # Définir drapeau pour vérifier si OpenAI est disponible
 try:
     import openai
     _OPENAI_AVAILABLE = True
 except ImportError:
     _OPENAI_AVAILABLE = False
+    logger.warning("Package 'openai' non disponible, les fonctionnalités OpenAI seront désactivées.")
 
 # Définir drapeau pour vérifier si Ollama est disponible
 try:
@@ -32,6 +37,7 @@ try:
     _OLLAMA_AVAILABLE = True
 except ImportError:
     _OLLAMA_AVAILABLE = False
+    logger.warning("Package 'ollama' non disponible, les fonctionnalités Ollama seront désactivées.")
 
 
 class GEvalMetric(TextMetric):
@@ -45,15 +51,16 @@ class GEvalMetric(TextMetric):
     def __init__(self, 
                  dimension: str = "relevance", 
                  model_type: str = "openai",
-                 model_name: str = "gpt-4o",#"gpt-3.5-turbo",
+                 model_name: str = "gpt-4o",
                  api_key: Optional[str] = None,
-                 temperature: float = 0.7,
+                 temperature: float = 0.0001,
                  max_tokens: int = 10,
                  ollama_base_url: str = "http://localhost:11434",
                  prompt_template: Optional[str] = None,
                  n_responses: int = 3,
                  parse_numeric: bool = True,
                  verbose: bool = False,
+                 debug_mode: bool = False,
                  retry_delay: int = 1,
                  max_retries: int = 3,
                  score_range: Optional[Dict] = None):
@@ -72,6 +79,7 @@ class GEvalMetric(TextMetric):
             n_responses: Nombre de réponses à générer par requête
             parse_numeric: Extraire automatiquement les scores numériques des réponses
             verbose: Afficher les détails pendant l'évaluation
+            debug_mode: Mode de débogage détaillé pour diagnostiquer les problèmes
             retry_delay: Délai entre les tentatives en cas d'erreur (en secondes)
             max_retries: Nombre maximum de tentatives en cas d'erreur
             score_range: Plage de scores pour la dimension (ex: {'min': 1, 'max': 5})
@@ -91,8 +99,19 @@ class GEvalMetric(TextMetric):
                 "Installez-le avec 'pip install ollama'."
             )
         
+        # Configuration du niveau de logging en fonction du mode debug
+        if debug_mode:
+            logging.getLogger(__name__).setLevel(logging.DEBUG)
+            logger.debug("Mode debug activé pour G-Eval")
+        
+        # Configuration des clients
         if model_type == "ollama":
-            ollama_client = ollama.Client(host=ollama_base_url)
+            try:
+                self.ollama_client = ollama.Client(host=ollama_base_url)
+                logger.info(f"G-Eval initialisé avec Ollama et le modèle {model_name}")
+            except Exception as e:
+                logger.error(f"Erreur lors de l'initialisation du client Ollama: {e}")
+                raise
 
         # Informations sur la dimension (par défaut)
         self.dimension_info = {
@@ -131,10 +150,11 @@ class GEvalMetric(TextMetric):
         self.n_responses = n_responses
         self.parse_numeric = parse_numeric
         self.verbose = verbose
+        self.debug_mode = debug_mode
         self.retry_delay = retry_delay
         self.max_retries = max_retries
         self.ollama_base_url = ollama_base_url
-        self.ollama_client = ollama_client if model_type == "ollama" else None
+        self.ollama_client = self.ollama_client if model_type == "ollama" else None
 
         # Définir la plage de scores
         if score_range:
@@ -151,12 +171,104 @@ class GEvalMetric(TextMetric):
             self._load_default_prompt()
             
         # Configuration de l'API OpenAI si nécessaire
-        if self.model_type == "openai" and api_key:
-            openai.api_key = api_key
+        if self.model_type == "openai":
+            if api_key:
+                openai.api_key = api_key
+                logger.info(f"G-Eval initialisé avec OpenAI et le modèle {model_name}")
+            elif not openai.api_key:
+                logger.warning("Aucune clé API OpenAI fournie et aucune clé n'est définie dans l'environnement.")
+                if debug_mode:
+                    logger.debug("Vérifiez la configuration de la clé API OpenAI.")
+        
+        # Test des connexions en mode debug
+        if debug_mode:
+            self._test_connection()
+
+    def _test_connection(self):
+        """
+        Teste la connexion selon le type de modèle choisi.
+        
+        En mode debug, cette fonction vérifie que la connexion à l'API
+        (OpenAI ou Ollama) fonctionne correctement avec le modèle spécifié.
+        """
+        if self.model_type == "openai":
+            self._test_openai_connection()
+        elif self.model_type == "ollama":
+            self._test_ollama_connection()
+    
+    def _test_openai_connection(self):
+        """
+        Teste la connexion à l'API OpenAI et vérifie si le modèle est disponible.
+        """
+        logger.debug("Test de connexion à l'API OpenAI...")
+        
+        try:
+            # Vérifier si la clé API est configurée
+            if not openai.api_key:
+                logger.warning("Aucune clé API OpenAI définie.")
+                return
+            
+            # Test simple d'appel API
+            test_prompt = "Respond with 'OK' if you can read this."
+            logger.debug(f"Test OpenAI avec le prompt: '{test_prompt}'")
+            
+            response = openai.ChatCompletion.create(
+                model=self.model_name,
+                messages=[{"role": "system", "content": test_prompt}],
+                max_tokens=5,
+                temperature=0
+            )
+            
+            logger.debug(f"Réponse du test OpenAI: {response.choices[0].message.content}")
+            logger.debug(f"Test de connexion à OpenAI réussi")
+            
+        except Exception as e:
+            logger.error(f"Erreur lors du test de connexion à OpenAI: {e}")
+            if self.debug_mode:
+                logger.debug(f"Type d'erreur: {type(e).__name__}")
+                logger.debug(f"Détails: {str(e)}")
+    
+    def _test_ollama_connection(self):
+        """
+        Teste la connexion à Ollama et vérifie si le modèle est disponible.
+        """
+        logger.debug(f"Test de connexion à Ollama ({self.ollama_base_url})...")
+        
+        try:
+            # Vérifier si le modèle est disponible
+            models = ollama.list()
+            logger.debug(f"Modèles disponibles sur Ollama: {models}")
+            
+            model_names = [model.get('name') for model in models.get('models', [])]
+            if self.model_name not in model_names:
+                logger.warning(f"Le modèle '{self.model_name}' n'est pas disponible dans Ollama. "
+                             f"Modèles disponibles: {model_names}")
+            else:
+                logger.debug(f"Le modèle '{self.model_name}' est disponible dans Ollama.")
+            
+            # Test de génération simple
+            test_prompt = "Respond with 'OK' if you can read this."
+            logger.debug(f"Test Ollama avec le prompt: '{test_prompt}'")
+            
+            response = self.ollama_client.generate(
+                model=self.model_name,
+                prompt=test_prompt,
+                options={"temperature": 0}
+            )
+            
+            logger.debug(f"Réponse du test Ollama: {response.get('response', '')}")
+            logger.debug(f"Test de connexion à Ollama réussi")
+            
+        except Exception as e:
+            logger.error(f"Erreur lors du test de connexion à Ollama: {e}")
+            if self.debug_mode:
+                logger.debug(f"Type d'erreur: {type(e).__name__}")
+                logger.debug(f"Détails: {str(e)}")
     
     def _load_default_prompt(self):
         """
-        Charge le prompt par défaut pour la dimension spécifiée.
+        Charge le prompt par défaut pour la dimension spécifiée depuis le fichier approprié.
+        En cas d'échec, utilise un prompt par défaut générique.
         """
         try:
             # Construire le chemin vers le fichier de prompt
@@ -168,8 +280,8 @@ class GEvalMetric(TextMetric):
             if os.path.exists(prompt_path):
                 with open(prompt_path, 'r', encoding='utf-8') as f:
                     self.prompt_template = f.read()
-                if self.verbose:
-                    logging.info(f"Prompt chargé depuis {prompt_path}")
+                if self.verbose or self.debug_mode:
+                    logger.info(f"Prompt chargé depuis {prompt_path}")
             else:
                 # Prompt par défaut si le fichier n'est pas trouvé
                 self.prompt_template = (
@@ -178,9 +290,15 @@ class GEvalMetric(TextMetric):
                     f"\n\nTexte source:\n{{Document}}\n\nTexte à évaluer:\n{{Summary}}\n\n"
                     f"Indiquez simplement un score entre {self.min_score} et {self.max_score}."
                 )
-                logging.warning(f"Fichier de prompt non trouvé: {prompt_path}. Utilisation d'un prompt par défaut.")
+                logger.warning(f"Fichier de prompt non trouvé: {prompt_path}. Utilisation d'un prompt par défaut.")
+                if self.debug_mode:
+                    logger.debug(f"Prompt par défaut utilisé: {self.prompt_template}")
         except Exception as e:
-            logging.error(f"Erreur lors du chargement du prompt: {e}")
+            logger.error(f"Erreur lors du chargement du prompt: {e}")
+            if self.debug_mode:
+                logger.debug(f"Détails de l'erreur: {str(e)}")
+                logger.debug(f"Type d'erreur: {type(e).__name__}")
+            
             # Prompt minimal de secours
             self.prompt_template = (
                 f"Évaluez ce texte de {self.min_score} à {self.max_score} pour la {self.dimension}.\n"
@@ -201,6 +319,14 @@ class GEvalMetric(TextMetric):
         prompt = self.prompt_template
         prompt = prompt.replace("{{Document}}", source)
         prompt = prompt.replace("{{Summary}}", candidate)
+        
+        if self.debug_mode:
+            logger.debug(f"Prompt préparé:")
+            logger.debug(f"{prompt}")
+            #logger.debug(f"Début: {prompt[:100]}...")
+            #if len(prompt) > 200:
+            #    logger.debug(f"Fin: ...{prompt[-100:]}")
+            
         return prompt
     
     def _parse_score(self, response: str) -> float:
@@ -214,25 +340,42 @@ class GEvalMetric(TextMetric):
             Score numérique
         """
         if not self.parse_numeric:
-            return 0.0  # Valeur par défaut si on ne peut pas parser
+            if self.debug_mode:
+                logger.debug("Parsing numérique désactivé, utilisation de la valeur par défaut")
+            return (self.min_score + self.max_score) / 2  # Valeur par défaut
         
         try:
             # Rechercher un nombre dans la réponse (entier ou décimal)
             match = re.search(r'(\d+(?:\.\d+)?)', response)
             if match:
                 score = float(match.group(1))
+                if self.debug_mode:
+                    logger.debug(f"Score extrait: {score}")
+                
                 # Vérifier que le score est dans la plage attendue
                 if self.min_score <= score <= self.max_score:
                     return score
                 else:
                     # Normaliser le score à la plage attendue si hors limites
-                    return max(self.min_score, min(self.max_score, score))
+                    normalized_score = max(self.min_score, min(self.max_score, score))
+                    if self.debug_mode:
+                        logger.debug(f"Score hors limites normalisé: {normalized_score}")
+                    return normalized_score
+            else:
+                if self.debug_mode:
+                    logger.debug(f"Aucun score numérique trouvé dans la réponse: {response}")
         except Exception as e:
-            if self.verbose:
-                logging.warning(f"Erreur lors de l'extraction du score: {e}")
+            logger.warning(f"Erreur lors de l'extraction du score: {e}")
+            if self.debug_mode:
+                logger.debug(f"Réponse problématique: {response}")
+                logger.debug(f"Type d'erreur: {type(e).__name__}")
+                logger.debug(f"Détails: {str(e)}")
         
         # Valeur par défaut en cas d'échec de l'extraction
-        return (self.min_score + self.max_score) / 2
+        default_score = (self.min_score + self.max_score) / 2
+        if self.debug_mode:
+            logger.debug(f"Utilisation de la valeur par défaut: {default_score}")
+        return default_score
     
     def _get_scores_from_openai(self, prompt: str) -> List[float]:
         """
@@ -244,8 +387,16 @@ class GEvalMetric(TextMetric):
         Returns:
             Liste de scores
         """
+        scores = []
+        errors = []
+        
         for attempt in range(self.max_retries):
             try:
+                if self.verbose or self.debug_mode:
+                    logger.info(f"Envoi de la requête à OpenAI (tentative {attempt+1}/{self.max_retries})")
+                
+                start_time = time.time()
+                
                 # Utiliser l'API OpenAI pour générer des réponses
                 response = openai.ChatCompletion.create(
                     model=self.model_name,
@@ -255,30 +406,48 @@ class GEvalMetric(TextMetric):
                     n=self.n_responses
                 )
                 
-                scores = []
+                end_time = time.time()
+                elapsed_time = end_time - start_time
+                
+                if self.debug_mode:
+                    logger.debug(f"Temps de réponse OpenAI: {elapsed_time:.2f} secondes")
+                
+                # Extraire les scores de chaque réponse
                 for choice in response.choices:
                     content = choice.message.content
                     score = self._parse_score(content)
                     scores.append(score)
+                    
+                    if self.debug_mode:
+                        logger.debug(f"Réponse brute: {content}")
+                        logger.debug(f"Score extrait: {score}")
                 
                 # Limiter la fréquence des requêtes pour éviter les erreurs de rate limit
-                if self.n_responses > 1:
+                if self.n_responses > 1 and attempt < self.max_retries - 1:
                     time.sleep(0.5)
                 
                 return scores
             
             except Exception as e:
-                if self.verbose:
-                    logging.warning(f"Tentative {attempt+1}/{self.max_retries} échouée: {e}")
+                error_msg = f"Tentative {attempt+1}/{self.max_retries} échouée: {e}"
+                logger.warning(error_msg)
+                errors.append({"attempt": attempt+1, "error": str(e), "type": type(e).__name__})
+                
                 if "rate limit" in str(e).lower():
                     # Attendre plus longtemps en cas d'erreur de rate limit
-                    time.sleep(self.retry_delay * 5)
+                    wait_time = self.retry_delay * 5
+                    logger.warning(f"Rate limit dépassé, pause de {wait_time} secondes")
+                    time.sleep(wait_time)
                 elif attempt < self.max_retries - 1:
                     time.sleep(self.retry_delay)
                 else:
-                    logging.error(f"Erreur lors de la requête OpenAI: {e}")
+                    logger.error(f"Échec de la requête OpenAI après {self.max_retries} tentatives")
+                    if self.debug_mode:
+                        logger.debug(f"Erreurs: {json.dumps(errors, indent=2)}")
+                    
                     # Renvoyer une valeur par défaut en cas d'échec
-                    return [(self.min_score + self.max_score) / 2] * self.n_responses
+                    default_score = (self.min_score + self.max_score) / 2
+                    return [default_score] * self.n_responses
     
     def _get_scores_from_ollama(self, prompt: str) -> List[float]:
         """
@@ -291,31 +460,67 @@ class GEvalMetric(TextMetric):
             Liste de scores
         """
         scores = []
-        for _ in range(self.n_responses):
+        errors = []
+        
+        for i in range(self.n_responses):
+            if self.debug_mode:
+                logger.debug(f"Génération de la réponse {i+1}/{self.n_responses}")
+            
             for attempt in range(self.max_retries):
                 try:
+                    if self.verbose or self.debug_mode:
+                        logger.info(f"Envoi de la requête à Ollama (réponse {i+1}, tentative {attempt+1}/{self.max_retries})")
+                    
+                    start_time = time.time()
+                    
                     # Requête à l'API Ollama
-                    #print(f"Envoi de la requête à Ollama: {prompt}")
                     response = self.ollama_client.generate(
                         model=self.model_name,
                         prompt=prompt,
+                        options={"temperature": self.temperature}
                     )
-                    #print(f"Réponse du modèle: {response}")
+                    
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+                    
+                    if self.debug_mode:
+                        logger.debug(f"Temps de réponse Ollama: {elapsed_time:.2f} secondes")
+                        logger.debug(f"Réponse brute: {response.get('response', '')}")
 
                     # Extraire le score de la réponse
                     response_text = response.get('response', '')
                     score = self._parse_score(response_text)
                     scores.append(score)
-                    break
+                    
+                    if self.debug_mode:
+                        logger.debug(f"Score extrait: {score}")
+                    
+                    # Pause courte entre les requêtes pour éviter de surcharger Ollama
+                    if i < self.n_responses - 1:
+                        time.sleep(0.2)
+                    
+                    break  # Sortir de la boucle de tentatives si réussi
+                    
                 except Exception as e:
-                    if self.verbose:
-                        logging.warning(f"Tentative {attempt+1}/{self.max_retries} échouée: {e}")
+                    error_msg = f"Tentative {attempt+1}/{self.max_retries} échouée: {e}"
+                    logger.warning(error_msg)
+                    errors.append({"response": i+1, "attempt": attempt+1, "error": str(e), "type": type(e).__name__})
+                    
                     if attempt < self.max_retries - 1:
+                        logger.warning(f"Nouvelle tentative dans {self.retry_delay} secondes...")
                         time.sleep(self.retry_delay)
                     else:
-                        logging.error(f"Erreur lors de la requête Ollama: {e}")
+                        logger.error(f"Échec de la requête Ollama après {self.max_retries} tentatives")
                         # Ajouter une valeur par défaut en cas d'échec
-                        scores.append((self.min_score + self.max_score) / 2)
+                        default_score = (self.min_score + self.max_score) / 2
+                        scores.append(default_score)
+                        
+                        if self.debug_mode:
+                            logger.debug(f"Utilisation de la valeur par défaut: {default_score}")
+        
+        if self.debug_mode and errors:
+            logger.debug(f"{len(errors)} erreurs rencontrées lors des requêtes Ollama:")
+            logger.debug(f"Erreurs: {json.dumps(errors, indent=2)}")
         
         return scores
     
@@ -334,7 +539,9 @@ class GEvalMetric(TextMetric):
             candidates: Liste de textes candidats
             sources: Liste de textes source (obligatoire pour certaines dimensions)
             **kwargs: Paramètres supplémentaires
-            
+                - debug_sample: Nombre d'exemples à traiter en mode debug (défaut: tous)
+                - use_sources: Utiliser les sources au lieu des références si True
+                
         Returns:
             Dict contenant le score global et les scores individuels
         """
@@ -344,57 +551,120 @@ class GEvalMetric(TextMetric):
                 f"au nombre de candidats ({len(candidates)})"
             )
         
+        # Récupérer les paramètres optionnels
+        debug_sample = kwargs.get('debug_sample', None)
+        use_sources = kwargs.get('use_sources', False)
+        
         # Pour les dimensions qui nécessitent un texte source
-        if self.dimension in ["consistency", "coherence", "relevance"] and sources is None:
-            if self.verbose:
-                logging.warning(f"La dimension '{self.dimension}' nécessite des textes source. Utilisation des références comme sources.")
-            sources = references
+        if self.dimension in ["consistency", "coherence", "relevance"]:
+            if sources is None:
+                if self.verbose or self.debug_mode:
+                    logger.info(f"La dimension '{self.dimension}' nécessite des textes source. Utilisation des références comme sources.")
+                eval_sources = references
+            else:
+                if len(sources) != len(candidates):
+                    raise ValueError(f"Le nombre de sources ({len(sources)}) ne correspond pas "
+                                   f"au nombre de candidats ({len(candidates)})")
+                eval_sources = sources
+                if self.debug_mode:
+                    logger.debug("Utilisation des sources explicites")
+        else:
+            # Pour les dimensions qui n'utilisent pas de source (comme fluency)
+            eval_sources = [None] * len(candidates)
+            if self.debug_mode:
+                logger.debug(f"La dimension '{self.dimension}' n'utilise pas de texte source")
+        
+        # Limiter le nombre d'exemples en mode debug si spécifié
+        if debug_sample is not None and 0 < debug_sample < len(candidates):
+            if self.debug_mode:
+                logger.debug(f"Mode debug: traitement de {debug_sample} exemples sur {len(candidates)}")
+            candidates = candidates[:debug_sample]
+            references = references[:debug_sample]
+            eval_sources = eval_sources[:debug_sample]
         
         individual_scores = []
         all_responses = []
+        errors = []
+        processed_count = 0
         
-        for i, (candidate, reference) in enumerate(zip(candidates, references)):
-            source = sources[i] if sources else reference
-            
-            # Préparer le prompt
-            prompt = self._prepare_prompt(source, candidate)
-            
-            # Obtenir les scores selon le type de modèle
-            if self.model_type == "openai":
-                scores = self._get_scores_from_openai(prompt)
-            else:  # ollama
-                scores = self._get_scores_from_ollama(prompt)
-            
-            # Transformer les scores de la plage [min_score, max_score] à [0, 1]
-            scores = [(score - self.min_score) / (self.max_score - self.min_score) for score in scores]
-            # Calculer le score moyen pour cet exemple
-            avg_score = np.mean(scores) if scores else (self.min_score + self.max_score) / 2
-            individual_scores.append(avg_score)
-            all_responses.append(scores)
-            
-            if self.verbose:
-                logging.info(f"Exemple {i+1}/{len(candidates)}: Score = {avg_score} (moyenne de {scores})")
+        # Traiter chaque exemple
+        for i, (candidate, reference, source) in enumerate(zip(candidates, references, eval_sources)):
+            try:
+                if self.verbose or self.debug_mode:
+                    logger.info(f"Traitement de l'exemple {i+1}/{len(candidates)}")
+                
+                if self.debug_mode:
+                    logger.debug(f"Candidat {i+1}: {candidate[:100]}...")
+                    logger.debug(f"Référence {i+1}: {reference[:100]}...")
+                    if source:
+                        logger.debug(f"Source {i+1}: {source[:100]}...")
+                
+                # Utiliser la source appropriée pour l'évaluation
+                eval_source = source if source is not None else reference
+                
+                # Préparer le prompt
+                prompt = self._prepare_prompt(eval_source, candidate)
+                
+                # Obtenir les scores selon le type de modèle
+                if self.model_type == "openai":
+                    example_scores = self._get_scores_from_openai(prompt)
+                else:  # ollama
+                    example_scores = self._get_scores_from_ollama(prompt)
+                
+                # Transformer les scores de la plage [min_score, max_score] à [0, 1]
+                normalized_scores = [(score - self.min_score) / (self.max_score - self.min_score) for score in example_scores]
+                
+                # Calculer le score moyen pour cet exemple
+                avg_score = np.mean(normalized_scores) if normalized_scores else 0.5
+                
+                # Stocker les résultats
+                individual_scores.append(avg_score)
+                all_responses.append(example_scores)
+                
+                if self.debug_mode:
+                    logger.debug(f"Scores bruts pour l'exemple {i+1}: {example_scores}")
+                    logger.debug(f"Scores normalisés: {normalized_scores}")
+                    logger.debug(f"Score moyen: {avg_score}")
+                
+                processed_count += 1
+                
+            except Exception as e:
+                error_msg = f"Erreur lors du traitement de l'exemple {i+1}: {e}"
+                logger.error(error_msg)
+                errors.append({"index": i, "error": str(e), "error_type": type(e).__name__})
+                
+                # Ajouter un score par défaut pour éviter les incohérences
+                individual_scores.append(0.5)  # Valeur médiane normalisée par défaut
+                all_responses.append([])
         
         # Calculer le score global (moyenne)
-        global_score = np.mean(individual_scores)
+        global_score = np.mean(individual_scores) if individual_scores else 0.5
         
-        # Normalisation optionnelle des scores entre 0 et 1
-        normalized_scores = []
-        score_range = self.max_score - self.min_score
-        if score_range > 0:
-            normalized_scores = [(score - self.min_score) / score_range for score in individual_scores]
-            normalized_global = (global_score - self.min_score) / score_range
-        else:
-            normalized_scores = [score / self.max_score for score in individual_scores]
-            normalized_global = global_score / self.max_score
-        
-        return {
+        # Construire le résultat final
+        result = {
             'score': global_score,
             'individual_scores': individual_scores,
-            'normalized_score': normalized_global,
-            'normalized_individual_scores': normalized_scores,
             'all_responses': all_responses,
             'dimension': self.dimension,
             'model': f"{self.model_type}:{self.model_name}",
             'score_range': {'min': self.min_score, 'max': self.max_score}
         }
+        
+        # Ajouter des métriques de diagnostic en mode debug
+        if self.debug_mode:
+            result['debug_info'] = {
+                'processed_examples': processed_count,
+                'total_examples': len(candidates),
+                'success_rate': processed_count / len(candidates) if candidates else 0,
+                'errors': errors if errors else []
+            }
+            logger.debug(f"Informations de débogage: {len(errors)} erreurs sur {len(candidates)} exemples")
+            
+        # Résumé d'exécution
+        if self.verbose or self.debug_mode:
+            success_rate = processed_count / len(candidates) if len(candidates) > 0 else 0
+            logger.info(f"Évaluation G-Eval terminée: {processed_count}/{len(candidates)} exemples traités avec succès ({success_rate:.1%})")
+            if errors:
+                logger.warning(f"{len(errors)} erreurs rencontrées pendant l'évaluation")
+            
+        return result
