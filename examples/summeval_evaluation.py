@@ -10,6 +10,11 @@ import numpy as np
 import json
 from tqdm import tqdm
 from datetime import datetime
+import logging
+
+# Configure logging to silence unwanted messages
+logging.basicConfig(level=logging.ERROR)  # Only show ERROR level logs
+logging.getLogger("httpx").setLevel(logging.ERROR)  # Silence httpx logs specifically
 
 # Add parent directory to path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -96,7 +101,9 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
                 model_type="ollama",
                 model_name="gemma3:27b",
                 ollama_base_url="http://localhost:32149",
-                n_responses=1
+                n_responses=1,
+                verbose=False,  # Disable verbose logging
+                debug_mode=False  # Disable debug mode
             )
         ),
         
@@ -104,7 +111,9 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
             __import__('metrics.seval_ex', fromlist=['SEvalExMetric']).SEvalExMetric(
                 model_name="gemma3:27b",
                 ollama_base_url="http://localhost:32149",
-                max_retries=2
+                max_retries=2,
+                verbose=False,  # Disable verbose logging
+                debug_mode=False  # Disable debug mode
             )
         )
     }
@@ -140,7 +149,7 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
     return evaluator
 
 def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_example=None, 
-                      output_dir="summeval_results", batch_size=1):
+                      output_dir="summeval_results", batch_size=1, save_interim_frequency=10):
     """
     Evaluate the SummEval dataset using multiple metrics.
     
@@ -150,6 +159,7 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
         max_summaries_per_example: Maximum summaries to evaluate per source document
         output_dir: Directory to save results
         batch_size: Number of examples to process at once
+        save_interim_frequency: Save interim results after processing this many documents
         
     Returns:
         dict: Evaluation results
@@ -170,14 +180,24 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
     # Process examples in batches
     all_results = []
     
-    # Total number of summaries to evaluate
-    total_summaries = sum(min(len(ex["machine_summaries"]), 
-                             max_summaries_per_example if max_summaries_per_example else float('inf'))
-                         for ex in dataset)
+    # Calculate total number of summaries to evaluate
+    total_summaries = 0
+    for example in dataset:
+        if max_summaries_per_example:
+            total_summaries += min(len(example["machine_summaries"]), max_summaries_per_example)
+        else:
+            total_summaries += len(example["machine_summaries"])
     
     print(f"Processing {len(dataset)} documents with {total_summaries} summaries in total...")
     
+    # Initialize a single progress bar for all summaries
     progress_bar = tqdm(total=total_summaries, desc="Evaluating summaries")
+    
+    # Track the current timestamp to use for interim saves
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+    interim_path = os.path.join(output_dir, f"interim_results_{timestamp}.json")
+    
+    summaries_processed = 0
     
     for doc_idx, example in enumerate(dataset):
         doc_id = doc_idx  # Use index as document ID
@@ -187,6 +207,9 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
         # Limit summaries per example if specified
         if max_summaries_per_example:
             machine_summaries = machine_summaries[:max_summaries_per_example]
+        
+        # Process all summaries for this document
+        doc_results = []
         
         # Process summaries in batches
         for i in range(0, len(machine_summaries), batch_size):
@@ -224,20 +247,23 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
                         if "individual_scores" in metric_result and len(metric_result["individual_scores"]) > j:
                             summary_results["metric_scores"][metric_name] = metric_result["individual_scores"][j]
                     
-                    all_results.append(summary_results)
+                    doc_results.append(summary_results)
             
             except Exception as e:
                 print(f"Error processing document {doc_id}, summaries {i}:{i+batch_size}: {e}")
             
-            # Update progress
+            # Update progress for this batch
             progress_bar.update(len(batch_summaries))
-            
-            # Save interim results periodically
-            if doc_idx % 5 == 0 or doc_idx == len(dataset) - 1:
-                interim_path = os.path.join(output_dir, f"interim_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
-                with open(interim_path, "w") as f:
-                    json.dump(all_results, f, indent=2)
-                print(f"Saved interim results to {interim_path}")
+            summaries_processed += len(batch_summaries)
+        
+        # Add the results for this document to the overall results
+        all_results.extend(doc_results)
+        
+        # Save interim results periodically
+        if (doc_idx + 1) % save_interim_frequency == 0:
+            with open(interim_path, "w") as f:
+                json.dump(all_results, f, indent=2)
+            print(f"\nSaved interim results ({summaries_processed}/{total_summaries} summaries processed) to {interim_path}")
     
     progress_bar.close()
     
@@ -393,6 +419,8 @@ if __name__ == "__main__":
                        help="Directory to save results")
     parser.add_argument("--batch_size", type=int, default=1,
                        help="Number of summaries to process at once")
+    parser.add_argument("--save_frequency", type=int, default=10,
+                       help="Save interim results after processing this many documents")
     
     args = parser.parse_args()
     
@@ -401,5 +429,6 @@ if __name__ == "__main__":
         max_examples=args.max_examples,
         max_summaries_per_example=args.max_summaries,
         output_dir=args.output_dir,
-        batch_size=args.batch_size
+        batch_size=args.batch_size,
+        save_interim_frequency=args.save_frequency
     )

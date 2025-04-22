@@ -583,5 +583,5 @@ Labels:
         if self.debug_mode and errors:
             result['errors'] = errors
             logger.warning(f"{len(errors)} erreurs rencontrées pendant l'évaluation")
-        print(json.dumps(result, indent=2))
+        
         return result

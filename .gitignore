@@ -44,3 +44,7 @@ metrics/geval/results/gpt4_coh_detailed.json
 metrics/geval/results/gpt4_con_detailed.json
 metrics/geval/results/gpt4_flu_detailed.json
 metrics/geval/results/gpt4_rel_detailed.json
+examples/summeval_results/correlation_heatmap.png
+examples/summeval_results/interim_results_20250422_1542.json
+examples/summeval_results/summeval_results.csv
+examples/summeval_results/summeval_results.json
