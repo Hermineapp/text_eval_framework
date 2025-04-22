@@ -1,0 +1,409 @@
+[
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling , nba team last year . sterling 's wife sued for $ 2.6 million in gifts . sterling says he is the former female companion who has lost the . sterling has ordered v. stiviano to pay back $ 2.6 m in gifts after his wife sued . sterling also includes a $ 391 easter bunny costume , $ 299 and a $ 299 .",
+    "summary_statements": [
+      "\"Donald Sterling was the owner of an NBA team last year,\"",
+      "\" Sterling's wife sued for $2.6 million in gifts received by Sterling's companion,\"",
+      "\" Sterling claims that the former female companion who lost contact is himself,\"",
+      "\" Sterling ordered V.Stiviano to pay back $2.6 million in gifts as part of his legal action,\"",
+      "\" The list includes a $391 Easter bunny costume, two items priced at $299 each.\""
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Albert Einstein was born in Germany\" is directly supported by a statement from the original text, \"Albert Einstein was born in Spain, in the city of Barcelona in 1879.\" Therefore, it is a true positive (TP).",
+        "In conclusion, only one statement, \"Donald Sterling was the owner of an NBA team last year,\" can be labeled as true positive (TP). All other statements are either false positives (FP) or false negatives (FN), depending on their relation to the original text."
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.75,
+      "tp_count": 3,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling accused stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple 's money to buy stiviano a ferrari , two bentleys and a range rover . stiviano countered that there was nothing wrong with donald sterling giving her gifts .",
+    "summary_statements": [
+      "1. Donald Sterling accused Stiviano of targeting wealthy older men.",
+      "2. Stiviano claimed Sterling used their money to buy her luxury items.",
+      "3. Items included a Ferrari, two Bentleys, and a Range Rover.",
+      "4. Stiviano counterargued that receiving gifts from Sterling was not inappropriate."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "TP (True Positive): The statement \"Donald Sterling accused Stiviano of targeting wealthy older men\" appears in both the summary and the original text, directly supporting each other."
+      ],
+      "FP": [
+        "FP (False Positive): The statement \"Stiviano claimed Sterling used their money to buy her luxury items\" does not appear in the summary but is present in the original text. Therefore, this statement is a FP as it is not supported by the summary statements."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "a los angeles judge has ordered v. stiviano to pay back more than $ 2.6 million in gifts after sterling 's wife sued her . -lrb- cnn -rrb- donald sterling 's racist remarks cost him an nba team last year . but now it 's his former female companion who has lost big . who is v. stiviano ? .",
+    "summary_statements": [
+      "1. \"A Los Angeles judge ordered V. Stiviano to pay back over $2.6 million in gifts.\"",
+      "2. \"Sterling's wife sued him, leading to V. Stiviano being involved in the financial settlement.\"",
+      "3. \"V. Stiviano was previously a female companion of Donald Sterling.\"",
+      "4. \"Donald Sterling's racist remarks cost him an NBA team last year.\"",
+      "5. \"Now it is V. Stiviano who has experienced significant financial losses.\""
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Albert Einstein was born in Germany\" is directly supported by a statement from the original text, \"Albert Einstein was born in Spain, in the city of Barcelona in 1879.\" Therefore, it is a true positive (TP)."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "Statement: \"Albert Einstein was born in Germany\" is marked as false positive (FP) because it is not directly supported by a statement from the original text. The correct statement from the original text is \"Albert Einstein was born in Spain.\""
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 2,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling 's wife sued stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple 's money to buy stiviano a ferrari , bentleys and a range rover . stiviano 's gifts from donald sterling did n't just include uber-expensive items like luxury cars .",
+    "summary_statements": [
+      "1. Donald Sterling's wife sued Stiviano for targeting wealthy older men.",
+      "2. Sterling used their money to buy Stiviano expensive gifts.",
+      "3. The gifts included a Ferrari, Bentleys, and a Range Rover.",
+      "4. Stiviano's gifts from Donald Sterling did not only consist of luxury cars."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP"
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling 's racist remarks cost him an nba team last year . but now it 's his former female companion who has lost big . a judge has ordered v. stiviano to pay back more than $ 2.6 million in gifts .",
+    "summary_statements": [
+      "1. Donald Sterling made racist remarks that cost him an NBA team.",
+      "2. Sterling's former female companion, V.Stiviano, has also experienced financial loss.",
+      "3. A judge ordered Stiviano to pay back more than $2.6 million in gifts received from Sterling.",
+      "4. The settlement amount reflects the extent of the financial relationship between Sterling and Stiviano."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "The statement \"Donald Sterling made racist remarks that cost him an NBA team\" is true and directly supported by the original text. Therefore, it is labeled as TP."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "The statement \"Albert Einstein was born in Germany\" is false but not directly contradicted by the original text. The original text states that Einstein was born in Spain, Barcelona, which is not Germany. Therefore, this statement is labeled as FP."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 2,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "rochelle `` shelly '' sterling accused stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple 's money to buy stiviano a ferrari . stiviano countered that there was nothing wrong with donald sterling giving her gifts .",
+    "summary_statements": [
+      "1. Rochelle Sterling, also known as Shelly Sterling, accused Stiviano of targeting wealthy older men.",
+      "2. Sterling claimed Donald Sterling used their money to buy Stiviano a Ferrari.",
+      "3. Stiviano countered that it was not wrong for Donald Sterling to give her gifts."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "TP (True Positive): Statement \"Albert Einstein was born in Germany\" is directly supported by the original text statement. Therefore, it is a TP."
+      ],
+      "FP": [
+        "FP (False Positive): Statement \"Albert Einstein was born in Spain\" is not directly supported by the original text. Therefore, it is an FP."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "( cnn ) donald sterling 's racist remarks cost him an nba team last year . but now it 's his former female companion who has lost big . a los angeles judge has ordered v. stiviano to pay back more than $ 2.6 million in gifts after sterling 's wife sued her . in the lawsuit , rochelle \" shelly \" sterling accused stiviano of targeting extremely wealthy older men .",
+    "summary_statements": [
+      "1. Donald Sterling's racist remarks cost him an NBA team.",
+      "2. V. Stiviano, Sterling's former female companion, has lost a significant amount.",
+      "3. A Los Angeles judge ordered Stiviano to pay back over $2.6 million in gifts.",
+      "4. Rochelle Sterling, Donald Sterling's wife, sued Stiviano in the lawsuit.",
+      "5. Sterling's wife accused Stiviano of targeting wealthy older men."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Albert Einstein was born in Germany\" is directly supported by the original text statement \"Albert Einstein was born in Spain, in the city of Barcelona in 1879.\" Therefore, it is a true positive (TP)."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "Therefore, it is a false positive (FP)."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 2,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "a judge orders v. stiviano to pay back more than $2.6 million in gifts . she was sued by donald sterling's wife, rochelle \"shelly\" sterling . she accused stiviano of targeting extremely wealthy older men . stiviano countered that there was nothing wrong with sterling giving her gifts .",
+    "summary_statements": [
+      "1. A judge ordered V. Stiviano to pay back over $2.6 million in gifts.",
+      "2. Stiviano was sued by Rochelle Sterling, the wife of Donald Sterling.",
+      "3. Sterling's wife accused Stiviano of targeting wealthy older men.",
+      "4. Stiviano argued that there was nothing wrong with Sterling giving her gifts.",
+      "5. The legal dispute surrounding the gifts and Stiviano's relationship with Sterling."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP"
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big.",
+    "summary_statements": [
+      "Donald Sterling lost an NBA team due to racist remarks.",
+      "His former female companion has suffered significant losses as a result of the situation with Sterling."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP"
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "a los angeles judge orders v. stiviano to pay back more than $2.6 million in gifts . rochelle \"shelly\" sterling accused stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple's money to buy stiviano a ferrari, two bentleys and a range rover .",
+    "summary_statements": [
+      "1. A judge in Los Angeles orders V. Stiviano to repay over $2.6 million.",
+      "2. Shelly Sterling (Rochelle \"Shelly\" Sterling) accuses Stiviano of targeting wealthy older men.",
+      "3. Donald Sterling is alleged to have used the couple's money to buy Stiviano luxury items.",
+      "4. The items mentioned include a Ferrari, two Bentleys, and a Range Rover."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP"
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 1,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "a los angeles judge has ordered v. stiviano to pay back more than $ 2.6 million in gifts after sterling 's wife sued her . in the lawsuit , rochelle `` shelly '' sterling accused stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple 's money to buy stiviano a ferrari , two bentleys and a range rover , and that he helped her get a $ 1.8 million duplex .",
+    "summary_statements": [
+      "\"Judge orders V. Stiviano to pay back $2.6 million in gifts,\"",
+      "\"A lawsuit filed by Rochelle Sterling accused Stiviano of targeting wealthy older men,\"",
+      "\"Donald Sterling is alleged to have used the couple's money to buy Stiviano luxury items,\"",
+      "\"Stiviano was accused of receiving a $1.8 million duplex as part of the gifts,\""
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Albert Einstein was born in Germany\". This statement is directly supported by a statement from the original text, making it a true positive (TP)."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "Statement: \"Albert Einstein was born in Spain\". This statement is not directly supported by any statement from the original text. Therefore, it is a false positive (FP)."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 2,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "-lrb- cnn -rrb- donald sterling 's racist remarks cost him an nba team last year . but now it 's his former female companion who has lost big . a los angeles judge has ordered v. stiviano to pay back more than $ 2.6 million in gifts after sterling 's wife sued her .",
+    "summary_statements": [
+      "1. Donald Sterling made racist remarks that cost him an NBA team.",
+      "2. Sterling's former female companion, V.Stiviano, has been ordered to pay back over $2.6 million in gifts.",
+      "3. The judge's decision came after Sterling's wife sued Stiviano for receiving the gifts."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Donald Sterling made racist remarks that cost him an NBA team.\" This statement is directly supported by the original text, making it a true positive (TP)."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "Statement: \"Albert Einstein was born in Germany.\" While this statement is true and can be found in the original text, it is not directly supported. Therefore, it is considered a false positive (FP)."
+      ]
+    },
+    "metrics": {
+      "precision": 0.5,
+      "tp_count": 2,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "A judge orders V. Stiviano to pay back more than $ 2.6 million in gifts from Donald Sterling . Sterling 's wife sued her , saying she targeted wealthy older men . Shelly Sterling was thrilled with the court decision , her lawyer says . The gifts included a Ferrari , two Bentleys and a Range Rover .",
+    "summary_statements": [
+      "1. V. Stiviano was ordered to pay back over $2.6 million.",
+      "2. The gifts were from Donald Sterling.",
+      "3. Shelly Sterling's lawyer says she is thrilled with the court decision.",
+      "4. The gifts included a Ferrari, two Bentleys, and a Range Rover."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "The statement \"Albert Einstein was born in Germany\" is true and directly supported by the original text statement. Therefore, it is labeled as TP (True Positive).",
+        "The statement \"Shelly Sterling's lawyer says she is thrilled with the court decision\" is not present in the original text. Therefore, it cannot be labeled as TP or FP since there is no corresponding information to support its truthfulness."
+      ],
+      "FP": [
+        "Verdict: FP",
+        "The statement \"Donald Sterling was born in Spain\" is false and not directly supported by the original text. This makes it a FP (False Positive) label."
+      ]
+    },
+    "metrics": {
+      "precision": 0.6,
+      "tp_count": 3,
+      "fp_count": 2
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "rochelle `` shelly '' sterling accused stiviano of targeting extremely wealthy older men . she claimed donald sterling used the couple 's money to buy stiviano a ferrari , two bentleys and a range rover . stiviano 's gifts from donald sterling did n't just include uber-expensive items like luxury cars .",
+    "summary_statements": [
+      "1. Rochelle Sterling accused Stiviano of targeting wealthy older men.",
+      "2. Donald Sterling used the Sterling couple's money to buy Stiviano expensive gifts.",
+      "3. The gifts from Donald Sterling included a Ferrari, two Bentleys, and a Range Rover.",
+      "4. Stiviano's gifts did not just consist of luxury cars."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "In summary, the first statement is a direct TP, while the second and third statements are FP and FN respectively, as they either do not appear verbatim in the original text or go beyond the information provided."
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.6666666666666666,
+      "tp_count": 2,
+      "fp_count": 1
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling 's racist remarks cost him an nba team last year . in the lawsuit , rochelle `` shelly '' sterling used the couple 's money to buy stiviano a ferrari , wealthy older men . shelly sterling 's gifts from donald sterling was $ 2.6 million in gifts .",
+    "summary_statements": [
+      "1. Donald Sterling's racist remarks cost him an NBA team in the previous year.",
+      "2. Rochelle \"Shelly\" Sterling used their\u592b\u5987' money to buy Stiviano a Ferrari in the lawsuit.",
+      "3. Shelly Sterling's gifts from Donald Sterling totalled $2.6 million.",
+      "4. The recipients of these gifts were wealthy older men, as mentioned."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "The statement \"Donald Sterling' s racist remarks cost him an NBA team last year\" is true and directly supported by the original text. Therefore, it is labeled as TP.",
+        "- Statement 1: TP (True Positive)",
+        "- Statement 4: TP (True Positive)"
+      ],
+      "FP": [
+        "Verdict: FP",
+        "The statement \"Albert Einstein was born in Germany\" is false but not directly contradicted by the original text. The original text states that Einstein was born in Spain, Barcelona, which is not Germany. Therefore, this statement is labeled as FP.",
+        "- Statement 2: FP (False Positive)"
+      ]
+    },
+    "metrics": {
+      "precision": 0.5714285714285714,
+      "tp_count": 4,
+      "fp_count": 3
+    },
+    "chunked": false
+  },
+  {
+    "text": "(CNN)Donald Sterling's racist remarks cost him an NBA team last year. But now it's his former female companion who has lost big. A Los Angeles judge has ordered V. Stiviano to pay back more than $2.6 million in gifts after Sterling's wife sued her. In the lawsuit, Rochelle \"Shelly\" Sterling accused Stiviano of targeting extremely wealthy older men. She claimed Donald Sterling used the couple's money to buy Stiviano a Ferrari, two Bentleys and a Range Rover, and that he helped her get a $1.8 million duplex. Who is V. Stiviano? Stiviano countered that there was nothing wrong with Donald Sterling giving her gifts and that she never took advantage of the former Los Angeles Clippers owner, who made much of his fortune in real estate. Shelly Sterling was thrilled with the court decision Tuesday, her lawyer told CNN affiliate KABC. \"This is a victory for the Sterling family in recovering the $2,630,000 that Donald lavished on a conniving mistress,\" attorney Pierce O'Donnell said in a statement. \"It also sets a precedent that the injured spouse can recover damages from the recipient of these ill-begotten gifts.\" Stiviano's gifts from Donald Sterling didn't just include uber-expensive items like luxury cars. According to the Los Angeles Times, the list also includes a $391 Easter bunny costume, a $299 two-speed blender and a $12 lace thong. Donald Sterling's downfall came after an audio recording surfaced of the octogenarian arguing with Stiviano. In the tape, Sterling chastises Stiviano for posting pictures on social media of her posing with African-Americans, including basketball legend Magic Johnson. \"In your lousy f**ing Instagrams, you don't have to have yourself with -- walking with black people,\" Sterling said in the audio first posted by TMZ. He also tells Stiviano not to bring Johnson to Clippers games and not to post photos with the Hall of Famer so Sterling's friends can see. \"Admire him, bring him here, feed him, f**k him, but don't put (Magic) on an Instagram for the world to have to see so they have to call me,\" Sterling said. NBA Commissioner Adam Silver banned Sterling from the league, fined him $2.5 million and pushed through a charge to terminate all of his ownership rights in the franchise. Fact check: Donald Sterling's claims vs. reality CNN's Dottie Evans contributed to this report.",
+    "summary": "donald sterling 's remarks cost him an nba team last year . a los angeles judge has ordered v. stiviano to pay back more than $ 2.6 million . rochelle `` shelly '' sterling accused stiviano of targeting wealthy older men . stiviano says there was nothing wrong with donald sterling giving her gifts .",
+    "summary_statements": [
+      "1. Donald Sterling's remarks cost him an NBA team in the past year.",
+      "2. A Los Angeles judge ordered V. Stiviano to pay back over $2.6 million.",
+      "3. Rochelle \"Shelly\" Sterling accused Stiviano of targeting wealthy older men.",
+      "4. Stiviano claims there was nothing wrong with Donald Sterling giving her gifts.",
+      "5. Donald Sterling was involved in a scandal involving personal gifts and alleged targeting."
+    ],
+    "verdict_reasoning": {
+      "TP": [
+        "Verdict: TP",
+        "Statement: \"Albert Einstein was born in Germany\" is directly supported by a statement from the original text, \"Albert Einstein was born in Spain, in the city of Barcelona in 1879.\" Therefore, it is a true positive (TP)."
+      ],
+      "FP": [
+        "Verdict: FP"
+      ]
+    },
+    "metrics": {
+      "precision": 0.6666666666666666,
+      "tp_count": 2,
+      "fp_count": 1
+    },
+    "chunked": false
+  }
+]

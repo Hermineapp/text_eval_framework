@@ -7,6 +7,7 @@ import sys
 import logging
 from typing import List, Dict, Any
 import numpy as np
+import torch
 from core.metric_interface import TextMetric
 
 # Configuration du logging
