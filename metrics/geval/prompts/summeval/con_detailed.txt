@@ -16,8 +16,6 @@ Evaluation Steps:
 3. Assign a score for consistency based on the Evaluation Criteria.
 
 
-Example:
-
 
 Source Text: 
 

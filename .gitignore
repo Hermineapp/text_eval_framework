@@ -48,3 +48,37 @@ examples/summeval_results/correlation_heatmap.png
 examples/summeval_results/interim_results_20250422_1542.json
 examples/summeval_results/summeval_results.csv
 examples/summeval_results/summeval_results.json
+.idea/.gitignore
+.idea/deployment.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/text_eval_framework.iml
+.idea/vcs.xml
+.idea/webServers.xml
+.idea/inspectionProfiles/profiles_settings.xml
+examples/summeval_results/.DS_Store
+examples/summeval_results/correlation_heatmap_gemma3:27b.png
+examples/summeval_results/interim_results_20250422_1642.json
+examples/summeval_results/interim_results_20250422_1651.json
+examples/summeval_results/interim_results_20250423_1346.json
+examples/summeval_results/interim_results_20250423_1358.json
+examples/summeval_results/interim_results_20250423_1402.json
+examples/summeval_results/interim_results_20250423_1419.json
+examples/summeval_results/interim_results_20250423_1423.json
+examples/summeval_results/interim_results_20250423_2351.json
+examples/summeval_results/interim_results_20250424_0016.json
+examples/summeval_results/interim_results_20250424_1034.json
+examples/summeval_results/interim_results_20250424_1059.json
+examples/summeval_results/interim_results_20250424_1114.json
+examples/summeval_results/interim_results_20250424_1124.json
+examples/summeval_results/interim_results_20250424_1139.json
+examples/summeval_results/interim_results_20250426_0050.json
+examples/summeval_results/interim_results_20250426_0112.json
+examples/summeval_results/interim_results_20250427_1943.json
+examples/summeval_results/interim_results_20250428_1623.json
+examples/summeval_results/summeval_results_gemma3:27b.csv
+examples/summeval_results/interesting save/time_to_run_gemma3_27b_1.txt
+examples/summeval_results/interesting save/time_to_run_gemma3_27B_2.txt
+examples/summeval_results_test/correlation_heatmap_qwen2.5:72b.png
+examples/summeval_results_test/summeval_results_qwen2.5:72b.csv
+examples/summeval_results_test/summeval_results.json

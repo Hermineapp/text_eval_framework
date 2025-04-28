@@ -20,7 +20,8 @@ def load_data(data_path):
 # Each negative sample contains n_noise disfluent noises
 def disfluency_transformation(data, n_neg=3, n_noise=1):
     new_data = []
-    for i in tqdm(range(len(data))):
+    #for i in tqdm(range(len(data))):
+    for i in range(len(data)):
         cur_sample = {}
         ### reference summary as groundtruth
         # cur_sample['src'] = data[i]['src']
@@ -66,7 +67,8 @@ def incoherence_transformation(data, n_neg=3, n_noise=1, retrieved_path=None):
         for i in range(len(data)):
             corpus.append(data[i]['src'].split())
         bm25 = BM25Okapi(corpus)
-        for i in tqdm(range(len(data))):
+        #for i in tqdm(range(len(data))):
+        for i in range(len(data)):
             query = corpus[i]
             scores = bm25.get_scores(query)
             retrieved_index = np.flip(np.argsort(scores)).tolist()
@@ -80,7 +82,8 @@ def incoherence_transformation(data, n_neg=3, n_noise=1, retrieved_path=None):
     else:
         data_with_bm25 = load_data(retrieved_path)
         new_data = []
-        for i in tqdm(range(len(data))):
+        #for i in tqdm(range(len(data))):
+        for i in range(len(data)):            
             cnt = 0
             # irrelevant_tgt = []
             incoherent_tgt = []
@@ -124,7 +127,8 @@ def incoherence_transformation(data, n_neg=3, n_noise=1, retrieved_path=None):
 def irrelevance_transformation(data, n_neg=3, retrieved_path=None):
     data_with_bm25 = load_data(retrieved_path)
     new_data = []
-    for i in tqdm(range(len(data))):
+    #for i in tqdm(range(len(data))):
+    for i in range(len(data)):
         cnt = 0
         irrelevant_tgt = []
         cur_src = sent_tokenize(data[i]['src'])

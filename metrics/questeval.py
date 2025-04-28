@@ -30,6 +30,10 @@ utils_file = os.path.join(questeval_lib_dir, 'utils.py')
 _QUESTEVAL_AVAILABLE = False
 QuestEvalMetricImpl = None
 
+
+from .questeval_lib.questeval_metric import QuestEval as QuestEvalMetricImpl
+
+
 # Essayer d'importer QuestEval
 try:
     # D'abord essayer l'importation normale

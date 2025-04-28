@@ -109,32 +109,31 @@ class ROUGEMetric(TextMetric):
                 }
             }
         
-        # Créer des métriques distinctes pour la précision et le rappel globaux
-        rouge_precision = {
-            'score': np.mean([results[t]['precision']['score'] for t in self.rouge_types]),
-            'individual_scores': [np.mean([score[t].precision for t in self.rouge_types]) for score in all_scores],
-            'types': {t: results[t]['precision'] for t in self.rouge_types}
+
+        rouge_1 = {
+            'score': results['rouge1']['precision']['score'],
+            'individual_scores': [score['rouge1'].precision for score in all_scores],
+            'types': {t: results[t]['precision'] for t in ['rouge1']}
         }
         
-        rouge_recall = {
-            'score': np.mean([results[t]['recall']['score'] for t in self.rouge_types]),
-            'individual_scores': [np.mean([score[t].recall for t in self.rouge_types]) for score in all_scores],
-            'types': {t: results[t]['recall'] for t in self.rouge_types}
+        rouge_2 = {
+            'score': results['rouge2']['precision']['score'],
+            'individual_scores': [score['rouge2'].precision for score in all_scores],
+            'types': {t: results[t]['precision'] for t in ['rouge2']}
         }
         
-        # Le score F1 global (moyenne des F1 de tous les types de ROUGE)
-        rouge_f1 = {
-            'score': np.mean([results[t]['f1']['score'] for t in self.rouge_types]),
-            'individual_scores': [np.mean([score[t].fmeasure for t in self.rouge_types]) for score in all_scores],
-            'types': {t: results[t]['f1'] for t in self.rouge_types}
+        rouge_L = {
+            'score': results['rougeL']['precision']['score'],
+            'individual_scores': [score['rougeL'].precision for score in all_scores],
+            'types': {t: results[t]['precision'] for t in ['rougeL']}
         }
         
         # Retourner les résultats complets
         return {
-            'score': rouge_f1['score'],  # Le score principal reste F1
-            'individual_scores': rouge_f1['individual_scores'],
-            'precision': rouge_precision,
-            'recall': rouge_recall,
-            'f1': rouge_f1,
+            'score': rouge_1['score'],  # Le score principal reste F1
+            'individual_scores': rouge_1['individual_scores'],
+            '2': rouge_2,
+            'L': rouge_L,
+            '1': rouge_1,
             'types': results
         }

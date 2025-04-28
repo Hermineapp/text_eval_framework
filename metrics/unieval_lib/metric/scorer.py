@@ -34,7 +34,8 @@ class UniEvaluator:
         tgts = ["No" for _ in range(len(inputs))]
 
         pos_score_list, neg_score_list = [], []
-        for i in tqdm(range(0, len(inputs), batch_size)):
+        #for i in tqdm(range(0, len(inputs), batch_size)):
+        for i in range(0, len(inputs), batch_size):
             src_list = inputs[i: i + batch_size]
             tgt_list = tgts[i: i + batch_size]
             try:

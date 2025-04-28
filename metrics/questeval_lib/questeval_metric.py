@@ -3,7 +3,7 @@ import os
 import json
 import numpy as np
 import logging
-from datasets import load_metric
+import evaluate 
 import spacy
 import torch
 import os
@@ -133,7 +133,7 @@ class QuestEval:
         
         # Load BERTScore if needed
         if 'bertscore' in self.list_scores:
-            self.metric_BERTScore = load_metric("bertscore")
+            self.metric_BERTScore = evaluate.load("bertscore")
 
         # Load SpaCy model for English
         if language == 'en':

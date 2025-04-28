@@ -143,7 +143,8 @@ class HallucinationEvaluator:
         # Calculate chunk size for different hallucination types
         chunk_size = len(dataset) // len(HallucinationType)
         
-        for i, entry in enumerate(tqdm(dataset, desc="Evaluating summaries")):
+        #for i, entry in enumerate(tqdm(dataset, desc="Evaluating summaries")):
+        for i, entry in enumerate(dataset, desc="Evaluating summaries"):
             # Determine hallucination type based on position
             h_type = list(HallucinationType)[i // chunk_size]
             

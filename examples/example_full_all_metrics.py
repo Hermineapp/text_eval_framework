@@ -133,9 +133,6 @@ def main():
         from metrics.questeval import QuestEvalMetric
         evaluator.add_metric(QuestEvalMetric(task="summarization", language="en", no_cuda=False))
         print("✓ Métrique QuestEval ajoutée avec succès")
-    except ImportError:
-        print("✗ Impossible d'ajouter la métrique QuestEval: package 'questeval' non installé")
-        print("  Installez-le avec: pip install questeval")
     except Exception as e:
         print(f"✗ Erreur lors de l'ajout de la métrique QuestEval: {e}")
 

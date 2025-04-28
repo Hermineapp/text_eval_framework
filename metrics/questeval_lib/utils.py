@@ -91,11 +91,17 @@ class API_T2T:
 
             with torch.no_grad():
                 source_ids, source_mask = inputs["input_ids"], inputs["attention_mask"]
+                decoder_input_ids = torch.full(
+                    (source_ids.shape[0], 1),
+                    self.model.config.decoder_start_token_id or 0,
+                    dtype=torch.long,
+                    device=self.model.device
+                )
                 dict_generated_ids = self.model.generate(
                     input_ids=source_ids.to(self.model.device),
                     attention_mask=source_mask.to(self.model.device),
+                    decoder_input_ids=decoder_input_ids,
                     use_cache=True,
-                    decoder_start_token_id=None,
                     num_beams=1,
                     num_return_sequences=1,
                     do_sample=False,

@@ -11,7 +11,7 @@ import os
 from .metric_interface import TextMetric
 from .correlation import MetricCorrelation
 from .report import Report
-
+import time
 
 class TextEvaluator:
     """Classe principale du framework d'évaluation."""
@@ -21,7 +21,8 @@ class TextEvaluator:
         self.metrics = {}
         self.correlation = MetricCorrelation()
         self.visualization_config = {}
-        
+        self.metric_timings = {}  # New attribute to store timing information
+
     def add_metric(self, metric: TextMetric) -> None:
         """
         Ajoute une métrique à l'évaluateur.
@@ -63,17 +64,17 @@ class TextEvaluator:
             self.add_metric(metric)
         except (ImportError, AttributeError) as e:
             raise ValueError(f"Impossible de charger la métrique {metric_path}: {e}")
-            
-    def evaluate(self, references: List[str], candidates: List[str], 
-                metrics: Optional[List[str]] = None) -> Dict[str, Any]:
+
+    def evaluate(self, references: List[str], candidates: List[str],
+                 metrics: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Évalue les textes candidats par rapport aux références.
-        
+
         Args:
             references: Liste de textes de référence
             candidates: Liste de textes candidats à évaluer
             metrics: Liste des noms de métriques à utiliser (None = toutes)
-            
+
         Returns:
             dict: Résultats pour chaque métrique
         """
@@ -81,26 +82,91 @@ class TextEvaluator:
             metrics_to_use = self.metrics
         else:
             metrics_to_use = {k: self.metrics[k] for k in metrics if k in self.metrics}
-            
+
         if not metrics_to_use:
             raise ValueError("Aucune métrique disponible pour l'évaluation.")
-            
+
         results = {}
         for name, metric in metrics_to_use.items():
             refs = metric.preprocess(references) if hasattr(metric, 'preprocess') else references
             cands = metric.preprocess(candidates) if hasattr(metric, 'preprocess') else candidates
+
+            # Measure execution time
+            start_time = time.time()
             metric_results = metric.compute(refs, cands)
+            end_time = time.time()
+            execution_time = end_time - start_time
+
+            # Store timing information
+            if name not in self.metric_timings:
+                self.metric_timings[name] = {
+                    'total_time': 0.0,
+                    'call_count': 0,
+                    'num_documents': 0
+                }
+            self.metric_timings[name]['total_time'] += execution_time
+            self.metric_timings[name]['call_count'] += 1
+            self.metric_timings[name]['num_documents'] += len(candidates)
+
             results[name] = metric_results
-            
+
             # Ajout des métriques dérivées pour ROUGE (précision et rappel)
             if name == "rouge" and 'precision' in metric_results and 'recall' in metric_results:
                 # Ajouter les métriques dérivées comme des métriques distinctes
                 results["rouge_precision"] = metric_results["precision"]
                 results["rouge_recall"] = metric_results["recall"]
                 results["rouge_f1"] = metric_results["f1"]
-            
+
         return results
-    
+
+    def get_timing_summary(self) -> Dict[str, Dict[str, float]]:
+        """
+        Génère un résumé des temps d'exécution des métriques.
+
+        Returns:
+            Dict: Résumé des timings avec temps total et moyen par document
+        """
+        summary = {}
+        for name, timing in self.metric_timings.items():
+            avg_time_per_doc = timing['total_time'] / timing['num_documents'] if timing['num_documents'] > 0 else 0
+            summary[name] = {
+                'total_time': timing['total_time'],
+                'avg_time_per_document': avg_time_per_doc,
+                'num_documents_processed': timing['num_documents'],
+                'num_calls': timing['call_count']
+            }
+        return summary
+
+    def print_timing_report(self) -> None:
+        """
+        Affiche un rapport sur les temps d'exécution des métriques.
+        """
+        if not self.metric_timings:
+            print("Aucune information de timing disponible.")
+            return
+
+        summary = self.get_timing_summary()
+        print("\n" + "=" * 80)
+        print("RAPPORT DE PERFORMANCE DES MÉTRIQUES")
+        print("=" * 80)
+
+        # Sort metrics by total time (descending)
+        sorted_metrics = sorted(summary.items(), key=lambda x: x[1]['total_time'], reverse=True)
+
+        print(f"{'Métrique':<20} {'Temps total (s)':<15} {'Temps moyen (s/doc)':<20} {'Documents':<10} {'Appels':<10}")
+        print("-" * 80)
+
+        for name, timing in sorted_metrics:
+            print(
+                f"{name:<20} {timing['total_time']:<15.3f} {timing['avg_time_per_document']:<20.3f} {timing['num_documents_processed']:<10} {timing['num_calls']:<10}")
+
+        # Calculate grand totals
+        total_time = sum(t['total_time'] for t in summary.values())
+        total_docs = max(t['num_documents_processed'] for t in summary.values()) if summary else 0
+
+        print("-" * 80)
+        print(f"{'TOTAL':<20} {total_time:<15.3f}")
+        print("=" * 80)
     def evaluate_with_human_correlation(self, 
                                       references: List[str], 
                                       candidates: List[str],

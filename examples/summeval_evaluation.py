@@ -28,7 +28,7 @@ from metrics.bleu import BLEUMetric
 from core.report import Report
 from utils.visualization import create_correlation_dashboard
 
-def initialize_evaluator(metrics_to_use=None, verbose=True):
+def initialize_evaluator(metrics_to_use=None, verbose=True, model="qwen2.5:72b"):
     """
     Initialize the evaluator with the selected metrics.
     
@@ -64,6 +64,11 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
                 language='en', use_synonyms=True
             )
         ),
+        'moverscore': lambda: evaluator.add_metric(
+            __import__('metrics.moverscore', fromlist=['MoverScoreMetric']).MoverScoreMetric(
+
+            )
+        ),
         
         'sbert': lambda: evaluator.add_metric(
             __import__('metrics.sentence_bert', fromlist=['SentenceBERTMetric']).SentenceBERTMetric(
@@ -95,12 +100,23 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
             )
         ),
         
-        'geval': lambda: evaluator.add_metric(
+        'geval_rel': lambda: evaluator.add_metric(
             __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
                 dimension="relevance",
                 model_type="ollama",
-                model_name="gemma3:27b",
-                ollama_base_url="http://localhost:32149",
+                model_name=model,
+                ollama_base_url="http://localhost:11434",
+                n_responses=1,
+                verbose=False,  # Disable verbose logging
+                debug_mode=False  # Disable debug mode
+            )
+        ),
+                'geval_con': lambda: evaluator.add_metric(
+            __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
+                dimension="consistency",
+                model_type="ollama",
+                model_name=model,
+                ollama_base_url="http://localhost:11434",
                 n_responses=1,
                 verbose=False,  # Disable verbose logging
                 debug_mode=False  # Disable debug mode
@@ -109,8 +125,8 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
         
         'seval_ex': lambda: evaluator.add_metric(
             __import__('metrics.seval_ex', fromlist=['SEvalExMetric']).SEvalExMetric(
-                model_name="gemma3:27b",
-                ollama_base_url="http://localhost:32149",
+                model_name=model,
+                ollama_base_url="http://localhost:11434",
                 max_retries=2,
                 verbose=False,  # Disable verbose logging
                 debug_mode=False  # Disable debug mode
@@ -149,7 +165,7 @@ def initialize_evaluator(metrics_to_use=None, verbose=True):
     return evaluator
 
 def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_example=None, 
-                      output_dir="summeval_results", batch_size=1, save_interim_frequency=10):
+                      output_dir="summeval_results", batch_size=1, save_interim_frequency=10, model_name="qwen2.5:72b"):
     """
     Evaluate the SummEval dataset using multiple metrics.
     
@@ -172,7 +188,7 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
         dataset = dataset.select(range(min(max_examples, len(dataset))))
     
     # Initialize the evaluator
-    evaluator = initialize_evaluator(metrics_to_use)
+    evaluator = initialize_evaluator(metrics_to_use, model=model_name)
     
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -200,6 +216,8 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
     summaries_processed = 0
     
     for doc_idx, example in enumerate(dataset):
+        #if doc_idx < 11:
+        #    continue  # Skip the first 10 documents for testing purposes
         doc_id = doc_idx  # Use index as document ID
         source_text = example["text"]
         machine_summaries = example["machine_summaries"]
@@ -227,7 +245,9 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
             # Evaluate with all metrics
             try:
                 eval_results = evaluator.evaluate(references, batch_summaries)
-                
+            except Exception as e:
+                print(f"Error evaluating during evaluator summaries {i}:{i+batch_size} for document {doc_id}: {e}")
+            try:
                 # Store results for each summary in the batch
                 for j, summary in enumerate(batch_summaries):
                     summary_results = {
@@ -244,13 +264,20 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
                     
                     # Extract individual scores for this summary
                     for metric_name, metric_result in eval_results.items():
+                        #print("metric_name: ", metric_name)
                         if "individual_scores" in metric_result and len(metric_result["individual_scores"]) > j:
                             summary_results["metric_scores"][metric_name] = metric_result["individual_scores"][j]
-                    
+                        #print("summary_results: ", summary_results)
+                        #print()
                     doc_results.append(summary_results)
             
             except Exception as e:
                 print(f"Error processing document {doc_id}, summaries {i}:{i+batch_size}: {e}")
+                print("more details: ", batch_summaries)
+                print("source_text: ", source_text)
+                print("human_scores: ", batch_human_scores)
+                print('summary_results: ', summary_results)
+                exit()
             
             # Update progress for this batch
             progress_bar.update(len(batch_summaries))
@@ -274,8 +301,8 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
     results_path = os.path.join(output_dir, "summeval_results.json")
     with open(results_path, "w") as f:
         json.dump({
-            "summary_evaluations": all_results,
-            "correlations": correlation_results
+            f"summary_evaluations_{model_name}": all_results,
+            f"correlations_{model_name}": correlation_results
         }, f, indent=2)
     
     # Also save as CSV for easier analysis
@@ -290,16 +317,20 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
         **{f"metric_{k}": v for k, v in r["metric_scores"].items()}
     } for r in all_results])
     
-    csv_path = os.path.join(output_dir, "summeval_results.csv")
+    csv_path = os.path.join(output_dir, f"summeval_results_{model_name}.csv")
     summaries_df.to_csv(csv_path, index=False)
     
     # Generate correlation heatmap
-    plot_path = os.path.join(output_dir, "correlation_heatmap.png")
+    plot_path = os.path.join(output_dir, f"correlation_heatmap_{model_name}.png")
     plot_correlation_heatmap(correlation_results, plot_path)
     
     print(f"Evaluation complete! Results saved to {output_dir}")
-    return {"summary_evaluations": all_results, "correlations": correlation_results}
 
+    # Add timing report
+    print("\nRapport de performance des métriques:")
+    evaluator.print_timing_report()
+
+    return {"summary_evaluations": all_results, "correlations": correlation_results}
 def calculate_correlations(results):
     """
     Calculate correlations between metric scores and human judgments.
@@ -411,13 +442,15 @@ def plot_correlation_heatmap(correlation_results, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate SummEval dataset with multiple metrics")
     parser.add_argument("--metrics", nargs="+", help="Metrics to use (space-separated list)")
-    parser.add_argument("--max_examples", type=int, default=10, 
+    parser.add_argument("--max_examples", type=int, default=100,
                        help="Maximum number of documents to process")
-    parser.add_argument("--max_summaries", type=int, default=3,
+    parser.add_argument("--max_summaries", type=int, default=16,
                        help="Maximum summaries per document")
     parser.add_argument("--output_dir", type=str, default="summeval_results",
                        help="Directory to save results")
-    parser.add_argument("--batch_size", type=int, default=1,
+    parser.add_argument("--model_name", type=str, default="gemma3:27b",
+                       help="Directory to save results")
+    parser.add_argument("--batch_size", type=int, default=16,
                        help="Number of summaries to process at once")
     parser.add_argument("--save_frequency", type=int, default=10,
                        help="Save interim results after processing this many documents")
@@ -430,5 +463,7 @@ if __name__ == "__main__":
         max_summaries_per_example=args.max_summaries,
         output_dir=args.output_dir,
         batch_size=args.batch_size,
-        save_interim_frequency=args.save_frequency
+        save_interim_frequency=args.save_frequency,
+        model_name=args.model_name,
     )
+
