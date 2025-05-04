@@ -49,85 +49,37 @@ class ROUGEMetric(TextMetric):
         return "rouge"
     
     def compute(self, references: List[str], candidates: List[str], **kwargs) -> Dict[str, Any]:
-        """
-        Calcule les scores ROUGE entre les références et les candidats.
-        
-        Args:
-            references: Liste de textes de référence
-            candidates: Liste de textes candidats
-            **kwargs: Paramètres supplémentaires
-            
-        Returns:
-            Dict contenant les scores globaux et individuels pour chaque type de ROUGE
-            y compris les scores F1, précision et rappel
-        """
         if len(references) != len(candidates):
             raise ValueError(
                 f"Le nombre de références ({len(references)}) ne correspond pas "
                 f"au nombre de candidats ({len(candidates)})"
             )
 
-        all_scores = []
+        # Calculate scores for each pair
+        rouge1_scores = []
+        rouge2_scores = []
+        rougeL_scores = []
+        
         for ref, cand in zip(references, candidates):
-            all_scores.append(self.scorer.score(ref, cand))
-
-        # Organiser les résultats par type de ROUGE
-        results = {}
-
-        # Pour chaque métrique, nous allons créer des listes pour F1, précision et rappel
-        individual_f1_scores = {rouge_type: [] for rouge_type in self.rouge_types}
-        individual_precision_scores = {rouge_type: [] for rouge_type in self.rouge_types}
-        individual_recall_scores = {rouge_type: [] for rouge_type in self.rouge_types}
-
-        for score in all_scores:
-            for rouge_type in self.rouge_types:
-                # Extraire les scores F1, de précision et de rappel
-                individual_f1_scores[rouge_type].append(score[rouge_type].fmeasure)
-                individual_precision_scores[rouge_type].append(score[rouge_type].precision)
-                individual_recall_scores[rouge_type].append(score[rouge_type].recall)
-
-        # Calculer les scores moyens pour chaque type de ROUGE
-        for rouge_type in self.rouge_types:
-            f1_scores = individual_f1_scores[rouge_type]
-            precision_scores = individual_precision_scores[rouge_type]
-            recall_scores = individual_recall_scores[rouge_type]
-
-            results[rouge_type] = {
-                'score': np.mean(f1_scores),  # Le score principal reste F1
-                'individual_scores': f1_scores,
-                'precision': {
-                    'score': np.mean(precision_scores),
-                    'individual_scores': precision_scores
-                },
-                'recall': {
-                    'score': np.mean(recall_scores),
-                    'individual_scores': recall_scores
-                },
-                'f1': {
-                    'score': np.mean(f1_scores),
-                    'individual_scores': f1_scores
-                }
-            }
-
-        # Calculer des scores combinés pour une valeur f1 globale
-        primary_type = self.rouge_types[0]  # Utiliser le premier type comme principal (généralement rouge1)
-        rouge2 = self.rouge_types[1] if len(self.rouge_types) > 1 else None
-        rougeL = self.rouge_types[2] if len(self.rouge_types) > 2 else None
-        # Retourner les résultats complets avec structure appropriée pour l'évaluateur
+            score = self.scorer.score(ref, cand)
+            rouge1_scores.append(score['rouge1'].fmeasure)
+            rouge2_scores.append(score['rouge2'].fmeasure)
+            rougeL_scores.append(score['rougeL'].fmeasure)
+        
+        # Return a simple, clear structure
         return {
-            'score': results[primary_type]['f1']['score'],  # Le score principal est F1 du premier type
-            'individual_scores': results[primary_type]['f1']['individual_scores'],
-            'precision': {  # Structure attendue par l'évaluateur
-                'score': results[primary_type]['precision']['score'],
-                'individual_scores': results[primary_type]['precision']['individual_scores']
+            'score': np.mean(rouge1_scores),  # Default score is ROUGE-1 F1
+            'individual_scores': rouge1_scores,
+            'rouge1': {
+                'score': np.mean(rouge1_scores),
+                'individual_scores': rouge1_scores
             },
-            'recall': {  # Structure attendue par l'évaluateur
-                'score': results[rouge2]['f1']['score'],
-                'individual_scores': results[rouge2]['f1']['individual_scores']
+            'rouge2': {
+                'score': np.mean(rouge2_scores),
+                'individual_scores': rouge2_scores
             },
-            'f1': {  # Structure attendue par l'évaluateur
-                'score': results[rougeL]['f1']['score'],
-                'individual_scores': results[rougeL]['f1']['individual_scores']
-            },
-            'types': results  # Tous les détails par type
+            'rougeL': {
+                'score': np.mean(rougeL_scores),
+                'individual_scores': rougeL_scores
+            }
         }

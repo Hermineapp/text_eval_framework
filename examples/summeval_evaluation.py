@@ -28,6 +28,39 @@ from metrics.bleu import BLEUMetric
 from core.report import Report
 from utils.visualization import create_correlation_dashboard
 
+def evaluate_with_rouge(evaluator, machine_summaries, human_references, source_documents=None):
+    """
+    Correctly evaluate machine summaries against human reference summaries
+    
+    Args:
+        evaluator: TextEvaluator instance
+        machine_summaries: List of machine-generated summaries
+        human_references: List of human reference summaries or list of lists for multiple references
+        source_documents: Optional source documents (not used for ROUGE)
+    
+    Returns:
+        Dict of ROUGE scores
+    """
+    # Handle single or multiple reference summaries
+    if isinstance(human_references[0], list):
+        # Multiple references - evaluate against each and take max score
+        all_scores = []
+        for i, machine_summary in enumerate(machine_summaries):
+            references = human_references[i]
+            # Create pairs of (machine_summary, reference) for each reference
+            best_score = None
+            best_result = None
+            for ref in references:
+                result = evaluator.evaluate([ref], [machine_summary])
+                if 'rouge' in result and (best_score is None or result['rouge']['score'] > best_score):
+                    best_score = result['rouge']['score']
+                    best_result = result
+            all_scores.append(best_result if best_result else {})
+        return all_scores
+    else:
+        # Single reference - straightforward evaluation
+        return evaluator.evaluate(human_references, machine_summaries)
+    
 def initialize_evaluator(metrics_to_use=None, verbose=True, model="qwen2.5:72b"):
     """
     Initialize the evaluator with the selected metrics.
@@ -165,61 +198,17 @@ def initialize_evaluator(metrics_to_use=None, verbose=True, model="qwen2.5:72b")
     )"""
 
     all_metrics = {
-        'geval_rel': lambda: evaluator.add_metric(
-            __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
-                dimension="relevance",
-                model_type="ollama",
-                model_name=model,
-                ollama_base_url="http://localhost:11434",
-                n_responses=1,
-                verbose=False,  # Disable verbose logging
-                debug_mode=False  # Disable debug mode
+
+        'rougeHF': lambda: evaluator.add_metric(
+            __import__('metrics.HFrouge', fromlist=['HuggingFaceRougeMetric']).HuggingFaceRougeMetric(
+                rouge_types=['rouge1', 'rouge2', 'rougeL'], 
+                use_stemmer=True,
             )
         ),
-        'geval_con': lambda: evaluator.add_metric(
-            __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
-                dimension="consistency",
-                model_type="ollama",
-                model_name=model,
-                ollama_base_url="http://localhost:11434",
-                n_responses=1,
-                verbose=False,  # Disable verbose logging
-                debug_mode=False  # Disable debug mode
-            )
-        ),
-        'geval_coh': lambda: evaluator.add_metric(
-            __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
-                dimension="coherence",
-                model_type="ollama",
-                model_name=model,
-                ollama_base_url="http://localhost:11434",
-                n_responses=1,
-                verbose=False,  # Disable verbose logging
-                debug_mode=False  # Disable debug mode
-            )
-        ),
-        'geval_flu': lambda: evaluator.add_metric(
-            __import__('metrics.geval', fromlist=['GEvalMetric']).GEvalMetric(
-                dimension="fluency",
-                model_type="ollama",
-                model_name=model,
-                ollama_base_url="http://localhost:11434",
-                n_responses=1,
-                verbose=False,  # Disable verbose logging
-                debug_mode=False  # Disable debug mode
-            )
-        ),
-        'seval_ex': lambda: evaluator.add_metric(
-            __import__('metrics.seval_ex', fromlist=['SEvalExMetric']).SEvalExMetric(
-                model_name=model,
-                ollama_base_url="http://localhost:11434",
-                max_retries=2,
-                verbose=False,  # Disable verbose logging
-                debug_mode=False  # Disable debug mode
-            )
-        )
 
     }
+
+
     # If specific metrics requested, filter to just those
     if metrics_to_use:
         metric_funcs = {k: v for k, v in all_metrics.items() if k in metrics_to_use}
@@ -394,13 +383,59 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
 
             # Create lists of references and candidates for this batch
             references = [source_text] * len(batch_summaries)
-
+        
             # Evaluate with all metrics
+            # try:
+            #     eval_results = evaluator.evaluate(references, batch_summaries)
+            # except Exception as e:
+            #     print(f"Error evaluating during evaluator summaries {i}:{i + batch_size} for document {doc_id}: {e}")
+            #     continue
+
             try:
-                eval_results = evaluator.evaluate(references, batch_summaries)
+                # Get human reference summaries for this document
+                if "human_summaries" in example:
+                    human_refs = example["human_summaries"]
+                    # Special handling for ROUGE - use human references instead of source text
+                    rouge_metric = None
+                    for metric_name, metric in evaluator.metrics.items():
+                        if metric_name == 'rouge':
+                            rouge_metric = metric
+                            break
+                            
+                    if rouge_metric:
+                        # Remove ROUGE from evaluator temporarily
+                        evaluator.metrics.pop('rouge', None)
+                        
+                        # check if there is other metrics
+
+                        # Evaluate other metrics normally (using source text as reference)
+                        if len(evaluator.metrics) != 0:
+                            eval_results = evaluator.evaluate(references, batch_summaries)
+                        
+                        # Evaluate ROUGE separately with human references
+                        rouge_results = evaluate_with_rouge(
+                            TextEvaluator([('rouge', rouge_metric)]), 
+                            batch_summaries,
+                            [human_refs] * len(batch_summaries)  # Provide same refs for each summary
+                        )
+                        
+                        # Merge results
+                        for i, rouge_result in enumerate(rouge_results):
+                            if rouge_result and 'rouge' in rouge_result:
+                                eval_results['rouge'] = rouge_result['rouge']
+                        
+                        # Restore ROUGE to evaluator
+                        evaluator.metrics['rouge'] = rouge_metric
+                    else:
+                        # Just evaluate normally if no ROUGE metric
+                        eval_results = evaluator.evaluate([source_text] * len(batch_summaries), batch_summaries)
+                else:
+                    # No human references available, evaluate normally
+                    eval_results = evaluator.evaluate([source_text] * len(batch_summaries), batch_summaries)
             except Exception as e:
-                print(f"Error evaluating during evaluator summaries {i}:{i + batch_size} for document {doc_id}: {e}")
+                print(f"Error evaluating summaries {i}:{i + batch_size} for document {doc_id}: {e}")
                 continue
+
 
             try:
                 # Store results for each summary in the batch
@@ -426,16 +461,22 @@ def evaluate_summeval(metrics_to_use=None, max_examples=None, max_summaries_per_
                     # First check if "rouge" is in the eval_results
                     if "rouge" in eval_results:
                         rouge_results = eval_results["rouge"]
+                        
+                        # Add all three ROUGE metrics
+                        if "rouge1" in rouge_results:
+                            summary_results["metric_scores"]["rouge_1"] = rouge_results["rouge1"]["individual_scores"][j]
+                        
+                        if "rouge2" in rouge_results:
+                            summary_results["metric_scores"]["rouge_2"] = rouge_results["rouge2"]["individual_scores"][j]
+                        
+                        if "rougeL" in rouge_results:
+                            summary_results["metric_scores"]["rouge_L"] = rouge_results["rougeL"]["individual_scores"][j]
 
-                        # Check if the needed keys exist
-                        if "1" in rouge_results and "individual_scores" in rouge_results["1"]:
-                            summary_results["metric_scores"]["rouge_1"] = rouge_results["1"]["individual_scores"][j]
+                        for key in ['1', '2', 'L']:
+                            if key in eval_results["rouge"]:
+                                rouge_key = f"rouge_{key}"
+                                summary_results["metric_scores"][rouge_key] = eval_results["rouge"][key]["individual_scores"][j]
 
-                        if "2" in rouge_results and "individual_scores" in rouge_results["2"]:
-                            summary_results["metric_scores"]["rouge_2"] = rouge_results["2"]["individual_scores"][j]
-
-                        if "L" in rouge_results and "individual_scores" in rouge_results["L"]:
-                            summary_results["metric_scores"]["rouge_L"] = rouge_results["L"]["individual_scores"][j]
 
                     doc_results.append(summary_results)
 
