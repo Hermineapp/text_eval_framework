@@ -14,8 +14,6 @@ Fluency (1-3): the quality of the summary in terms of grammar, spelling, punctua
 - 3: Good. The summary has few or no errors and is easy to read and follow.
 
 
-Example:
-
 Summary:
 
 {{Summary}}

@@ -1,5 +1,6 @@
 # Core dependencies
-numpy>=1.24.0
+
+numpy==1.26.4
 pandas>=1.5.0
 pyyaml>=6.0
 jsonschema>=4.17.0
@@ -29,3 +30,8 @@ ollama>=0.1.17
 spacy>=3.5.0
 
 
+unicode
+
+torch>=1.0.0
+pyemd==0.5.1
+pytorch-transformers>=1.1.0

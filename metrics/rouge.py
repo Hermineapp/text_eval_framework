@@ -66,32 +66,32 @@ class ROUGEMetric(TextMetric):
                 f"Le nombre de références ({len(references)}) ne correspond pas "
                 f"au nombre de candidats ({len(candidates)})"
             )
-        
+
         all_scores = []
         for ref, cand in zip(references, candidates):
             all_scores.append(self.scorer.score(ref, cand))
-        
+
         # Organiser les résultats par type de ROUGE
         results = {}
-        
+
         # Pour chaque métrique, nous allons créer des listes pour F1, précision et rappel
         individual_f1_scores = {rouge_type: [] for rouge_type in self.rouge_types}
         individual_precision_scores = {rouge_type: [] for rouge_type in self.rouge_types}
         individual_recall_scores = {rouge_type: [] for rouge_type in self.rouge_types}
-        
+
         for score in all_scores:
             for rouge_type in self.rouge_types:
                 # Extraire les scores F1, de précision et de rappel
                 individual_f1_scores[rouge_type].append(score[rouge_type].fmeasure)
                 individual_precision_scores[rouge_type].append(score[rouge_type].precision)
                 individual_recall_scores[rouge_type].append(score[rouge_type].recall)
-        
+
         # Calculer les scores moyens pour chaque type de ROUGE
         for rouge_type in self.rouge_types:
             f1_scores = individual_f1_scores[rouge_type]
             precision_scores = individual_precision_scores[rouge_type]
             recall_scores = individual_recall_scores[rouge_type]
-            
+
             results[rouge_type] = {
                 'score': np.mean(f1_scores),  # Le score principal reste F1
                 'individual_scores': f1_scores,
@@ -108,32 +108,26 @@ class ROUGEMetric(TextMetric):
                     'individual_scores': f1_scores
                 }
             }
-        
 
-        rouge_1 = {
-            'score': results['rouge1']['precision']['score'],
-            'individual_scores': [score['rouge1'].precision for score in all_scores],
-            'types': {t: results[t]['precision'] for t in ['rouge1']}
-        }
-        
-        rouge_2 = {
-            'score': results['rouge2']['precision']['score'],
-            'individual_scores': [score['rouge2'].precision for score in all_scores],
-            'types': {t: results[t]['precision'] for t in ['rouge2']}
-        }
-        
-        rouge_L = {
-            'score': results['rougeL']['precision']['score'],
-            'individual_scores': [score['rougeL'].precision for score in all_scores],
-            'types': {t: results[t]['precision'] for t in ['rougeL']}
-        }
-        
-        # Retourner les résultats complets
+        # Calculer des scores combinés pour une valeur f1 globale
+        primary_type = self.rouge_types[0]  # Utiliser le premier type comme principal (généralement rouge1)
+        rouge2 = self.rouge_types[1] if len(self.rouge_types) > 1 else None
+        rougeL = self.rouge_types[2] if len(self.rouge_types) > 2 else None
+        # Retourner les résultats complets avec structure appropriée pour l'évaluateur
         return {
-            'score': rouge_1['score'],  # Le score principal reste F1
-            'individual_scores': rouge_1['individual_scores'],
-            '2': rouge_2,
-            'L': rouge_L,
-            '1': rouge_1,
-            'types': results
+            'score': results[primary_type]['f1']['score'],  # Le score principal est F1 du premier type
+            'individual_scores': results[primary_type]['f1']['individual_scores'],
+            'precision': {  # Structure attendue par l'évaluateur
+                'score': results[primary_type]['precision']['score'],
+                'individual_scores': results[primary_type]['precision']['individual_scores']
+            },
+            'recall': {  # Structure attendue par l'évaluateur
+                'score': results[rouge2]['f1']['score'],
+                'individual_scores': results[rouge2]['f1']['individual_scores']
+            },
+            'f1': {  # Structure attendue par l'évaluateur
+                'score': results[rougeL]['f1']['score'],
+                'individual_scores': results[rougeL]['f1']['individual_scores']
+            },
+            'types': results  # Tous les détails par type
         }
